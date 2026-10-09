@@ -65,6 +65,19 @@ dialog::backdrop{background:#0008}
 .dh2{padding:16px 18px;color:#fff}.dh2 h3{margin:0;font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:21px;line-height:1.35}
 dl{margin:0;padding:12px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px}dd{margin:0}
 .x{margin:0 18px 16px;font:inherit;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+.xs{overflow-x:auto}
+.xt{width:100%;min-width:780px;border-collapse:collapse;font-size:14px}
+.xt th,.xt td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:center}
+.xt thead th{background:var(--ink);color:var(--bg);font-weight:600;border-color:color-mix(in srgb,var(--bg) 30%,var(--ink))}
+.xt td.d{white-space:nowrap;font-weight:600;width:96px}
+.xt td.d small{display:block;font-weight:400;color:var(--mute);font-size:12px}
+.xt td.w{white-space:nowrap;width:76px}
+.xt tr.wk td{background:var(--off)}
+.xt tr.today td.d{box-shadow:inset -4px 0 0 var(--today)}
+.xt tbody tr:hover td{background:color-mix(in srgb,var(--accent) 14%,var(--card));border-top-color:var(--accent);border-bottom-color:var(--accent)}
+.xt tbody tr:hover td.d,.xt tbody tr:hover td.w{background:var(--accent);color:#fff}
+.xt tbody tr:hover td.d small{color:#fff}
+.ce{display:block;width:100%;text-align:start;border:0;background:none;color:inherit;font:inherit;font-size:13.5px;line-height:1.35;padding:2px 6px;margin:2px 0;border-inline-start:4px solid var(--c);border-radius:3px;cursor:pointer}
 @media (max-width:640px){.days small{display:none}.days{height:34px}.day{min-height:74px}.chip{font-size:11px;padding:1px 3px}.n small{display:none}.gr{grid-template-columns:150px 1fr}}
 @media print{.bar,.note{display:none}}
 </style>
@@ -73,8 +86,8 @@ dl{margin:0;padding:12px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px
 <header><h1 id="title"></h1><p class="sub" id="sub"></p></header>
 <div class="bar" role="toolbar" aria-label="תצוגה וסינון">
   <div class="seg" role="group" aria-label="תצוגה">
-    <button data-v="month" aria-pressed="true">לוח שנה</button>
-    <button data-v="gantt" aria-pressed="false">ציר זמן</button>
+    <button data-v="table" aria-pressed="true">טבלה</button>
+    <button data-v="month" aria-pressed="false">לוח שנה</button>
     <button data-v="list" aria-pressed="false">רשימה</button>
   </div>
   <select id="fGroup" aria-label="סוג"><option value="">כל הסוגים</option></select>
@@ -107,7 +120,7 @@ const norm=s=>String(s??'').replace(/\s+/g,' ').trim();
 const dn=d=>Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);
 const fromN=n=>{const d=new Date(n*864e5);return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),12)};
 const col=g=>GCOL[g]||'#6b7280';
-let all=[],hebrew={},view='month',cur=null,eid=0;
+let all=[],hebrew={},layouts={},view='table',cur=null,eid=0;
 
 function parseCSV(t){
   const rows=[];let r=[],f='',q=false;
@@ -137,6 +150,7 @@ function parseTab(text,name){
     if(norm(hdr[c])=='שם האירוע')cols.push({c,aud:'לוח שנה וחגים',group:'חגים ואירועי לוח שנה'});
     else if(label)cols.push({c,aud:label,group:groupOf(label,carry)});
   }
+  layouts[year*12+month-1]={mon:norm(grp[0]),heb:norm(grp[1]),cols:cols.map(({aud,group})=>({aud,group}))};
   const out=[];let day=null;
   for(const row of rows.slice(hi+1)){
     const a=norm(row[0]),m=a.match(/^(\d{1,4})[\/.\-](\d{1,2})[\/.\-](\d{1,4})/);
@@ -192,35 +206,22 @@ function renderMonth(list){
   }
   return h+'</div>';
 }
-function renderGantt(list){
-  const y=cur.getFullYear(),m=cur.getMonth(),dim=new Date(y,m+1,0).getDate(),a=dn(new Date(y,m,1)),b=a+dim-1;
-  const ev=list.filter(e=>e.sn<=b&&e.en>=a),t=dn(new Date());
-  let h=nav(MONTHS[m]+' '+y);
-  if(!ev.length)return h+'<div class="empty">אין אירועים בחודש זה</div>';
-  h+=`<div class="gs"><div class="gw"><div class="gr head"><div class="gl">אירוע</div><div class="days">${Array.from({length:dim},(_,i)=>{const w=new Date(y,m,i+1).getDay();return `<span class="${w>=5?'wk':''}">${i+1}<small>${DAYS[w].slice(0,1)}׳</small></span>`}).join('')}</div></div>`;
-  for(const e of ev){
-    const s=Math.max(e.sn,a),f=Math.min(e.en,b);
-    h+=`<div class="gr" data-a="${s-a+1}" data-b="${f-a+1}"><div class="gl" title="${esc(e.title)}">${esc(e.title)}<small>${esc(e.aud)}</small></div><div class="tk" style="background-size:calc(100%/${dim}) 100%"><button class="bar1" data-id="${e.id}" aria-label="${esc(e.title)}" style="background:${col(e.group)};inset-inline-start:${(s-a)/dim*100}%;width:${(f-s+1)/dim*100}%"></button>${t>=a&&t<=b?`<div class="tl" style="inset-inline-start:${(t-a+.5)/dim*100}%"></div>`:''}</div></div>`;
+function renderTable(list){
+  const y=cur.getFullYear(),m=cur.getMonth(),dim=new Date(y,m+1,0).getDate(),fg=$('#fGroup').value,fa=$('#fAud').value;
+  const lay=layouts[y*12+m]||{mon:MONTHS[m],heb:'',cols:[...new Map(all.map(e=>[e.aud,{aud:e.aud,group:e.group}])).values()]};
+  const cols=lay.cols.filter(c=>!CONFIG.HIDE_GROUPS.includes(c.group)&&(!fg||c.group==fg)&&(!fa||c.aud==fa));
+  const EV='חגים ואירועי לוח שנה',gs=[];
+  cols.forEach(c=>{const l=gs[gs.length-1];if(l&&l.g==c.group)l.n++;else gs.push({g:c.group,n:1})});
+  let h=nav(MONTHS[m]+' '+y)+'<div class="xs"><table class="xt"><thead><tr><th>'+esc(lay.mon||MONTHS[m])+'</th><th>'+esc(lay.heb)+'</th>'
+    +gs.map(g=>`<th colspan="${g.n}" style="background:${g.g==EV?'':col(g.g)}">${g.g==EV?'':esc(g.g)}</th>`).join('')
+    +'</tr><tr><th>תאריך</th><th>יום</th>'+cols.map(c=>`<th>${c.group==EV?'שם האירוע':esc(c.aud)}</th>`).join('')+'</tr></thead><tbody>';
+  const t=dn(new Date());
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(y,m,d,12),n=dn(dt),w=dt.getDay();
+    h+=`<tr class="${w>=5?'wk':''} ${n==t?'today':''}"><td class="d">${String(d).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${y}<small>${esc(hebrew[n]||'')}</small></td><td class="w">${DAYS[w]}</td>`
+      +cols.map(c=>`<td>${list.filter(e=>e.aud==c.aud&&e.sn<=n&&e.en>=n).map(e=>`<button class="ce" style="--c:${col(e.group)}" data-id="${e.id}">${esc(e.title)}</button>`).join('')}</td>`).join('')+'</tr>';
   }
-  return h+'<div class="hv" hidden><i></i></div></div></div>';
-}
-function gHover(){
-  const gw=document.querySelector('.gw');if(!gw)return;
-  const dh=gw.querySelector('.days'),hv=gw.querySelector('.hv'),line=hv.firstElementChild;
-  const spans=[...dh.children],rows=[...gw.querySelectorAll('.gr[data-a]')],dim=spans.length;
-  let last=-1;
-  const clear=()=>{last=-1;hv.hidden=true;spans.forEach(x=>x.classList.remove('hl'));rows.forEach(r=>r.classList.remove('dim','on'))};
-  gw.onpointermove=ev=>{
-    const r=dh.getBoundingClientRect();
-    if(ev.clientX<r.left||ev.clientX>r.right)return clear();
-    const i=Math.min(dim-1,Math.max(0,Math.floor((r.right-ev.clientX)/r.width*dim)));
-    if(i==last)return;
-    if(last>=0)spans[last].classList.remove('hl');
-    last=i;hv.hidden=false;spans[i].classList.add('hl');
-    line.style.insetInlineStart=((i+.5)/dim*100)+'%';
-    rows.forEach(rw=>{const on=+rw.dataset.a<=i+1&&i+1<=+rw.dataset.b;rw.classList.toggle('on',on);rw.classList.toggle('dim',!on)});
-  };
-  gw.onpointerleave=clear;
+  return h+'</tbody></table></div>';
 }
 function renderList(list){
   const q=$('#q').value.trim(),y=cur.getFullYear(),m=cur.getMonth(),a=dn(new Date(y,m,1)),b=dn(new Date(y,m+1,0));
@@ -231,9 +232,8 @@ function renderList(list){
 }
 function render(){
   const list=filtered(),q=$('#q').value.trim();
-  $('#view').innerHTML=view=='month'?renderMonth(list):view=='gantt'?renderGantt(list):renderList(list);
+  $('#view').innerHTML=view=='month'?renderMonth(list):view=='table'?renderTable(list):renderList(list);
   const p=$('#prev'),n=$('#next');
-  if(view=='gantt')gHover();
   if(p){p.onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);render()};n.onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);render()}}
   const nt=$('#note');
   if(q&&view!='list'){nt.hidden=false;nt.innerHTML=`נמצאו ${list.length} אירועים בשנה כולה. <button id="toList">הצגה ברשימה</button>`;$('#toList').onclick=()=>setView('list')}
@@ -269,7 +269,7 @@ async function load(){
   $('#title').textContent=CONFIG.TITLE;document.title=CONFIG.TITLE;
   let tabs,live=true;
   try{tabs=await fetchTabs()}catch(e){tabs=Object.entries(EMBEDDED).map(([n,t])=>[t,n]);live=false}
-  hebrew={};eid=0;
+  hebrew={};layouts={};eid=0;
   all=merge(tabs.flatMap(([t,n])=>parseTab(t,n)));
   const nt=$('#sub');
   nt.textContent=live?'מתעדכן אוטומטית מהגיליון · '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}):(CONFIG.SHEET_ID||CONFIG.CSV_URLS.length?'לא הצלחנו לטעון את הגיליון, מוצגים נתונים שמורים':'מוצגים נתונים שמורים. יש להגדיר SHEET_ID כדי לחבר את הגיליון');
