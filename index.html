@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>לו"ז בית ספרי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#16233a;--mute:#5d6b82;--line:#dde3ea;--accent:#1f4fd8;--today:#e5484d}
+@media (prefers-color-scheme:dark){:root{--bg:#10151e;--card:#182030;--ink:#e8edf5;--mute:#93a0b5;--line:#27324a;--accent:#7aa2ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Assistant,Arial,sans-serif;font-size:16px;line-height:1.45}
+header{padding:20px 20px 12px;max-width:1200px;margin:auto}
+h1{font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:clamp(26px,5vw,38px);margin:0 0 4px}
+.sub{color:var(--mute);margin:0}
+.bar{max-width:1200px;margin:auto;padding:8px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;color:var(--ink);font:inherit;padding:8px 14px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);font-weight:600}
+select,input[type=search]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+button:focus-visible,select:focus-visible,input:focus-visible,.ev:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+main{max-width:1200px;margin:auto;padding:8px 20px 40px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 14px;font-size:14px;color:var(--mute)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:baseline}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ev{cursor:pointer}.cancel{text-decoration:line-through;opacity:.55}
+/* month */
+.mnav{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.mnav h2{margin:0;font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:22px}
+.mnav button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;width:38px;height:34px;font-size:18px;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.dh{padding:6px;text-align:center;font-weight:600;color:var(--mute);font-size:14px;border-bottom:1px solid var(--line)}
+.day{min-height:104px;padding:4px;border-inline-start:1px solid var(--line);border-bottom:1px solid var(--line)}
+.day.off{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.day .n{font-size:13px;color:var(--mute);padding:0 4px}
+.day.today .n{background:var(--today);color:#fff;border-radius:10px;padding:1px 7px;font-weight:700}
+.chip{display:block;width:100%;text-align:start;border:0;font:inherit;font-size:13px;color:#fff;border-radius:5px;padding:2px 6px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* gantt */
+.gscroll{overflow-x:auto}
+.gw{min-width:980px;position:relative}
+.grow{display:grid;grid-template-columns:230px 1fr;border-bottom:1px solid var(--line);align-items:center}
+.grow.head{position:sticky;top:0;background:var(--card);font-weight:600;font-size:14px}
+.glabel{padding:7px 12px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.glabel small{color:var(--mute);display:block;font-size:12px}
+.track{position:relative;height:36px;border-inline-start:1px solid var(--line)}
+.months{display:flex;height:34px}
+.months div{border-inline-end:1px solid var(--line);padding:7px 8px;font-size:13px;color:var(--mute);overflow:hidden;white-space:nowrap}
+.bar1{position:absolute;top:8px;height:20px;border-radius:5px;min-width:7px}
+.tl{position:absolute;top:0;bottom:0;width:2px;background:var(--today);z-index:2;pointer-events:none}
+/* list */
+.item{display:grid;grid-template-columns:6px 1fr auto;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center;width:100%;text-align:start;background:none;border-inline:0;border-top:0;color:inherit;font:inherit}
+.item i{align-self:stretch;border-radius:3px}
+.item b{display:block}.item span{color:var(--mute);font-size:14px}
+.when{font-size:14px;color:var(--mute);white-space:nowrap}
+.empty{padding:40px;text-align:center;color:var(--mute)}
+dialog{border:0;border-radius:14px;padding:0;max-width:440px;width:92vw;background:var(--card);color:var(--ink);box-shadow:0 20px 60px #0006}
+dialog::backdrop{background:#0008}
+.dh2{padding:16px 18px;color:#fff}.dh2 h3{margin:0;font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:22px}
+dl{margin:0;padding:14px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px}dd{margin:0}
+.x{margin:0 18px 16px;font:inherit;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
+.warn{margin:0 20px;max-width:1160px;margin-inline:auto;padding:8px 20px;color:var(--mute);font-size:14px}
+@media (max-width:640px){.day{min-height:70px}.chip{font-size:11px;padding:1px 3px}.grow{grid-template-columns:150px 1fr}}
+@media print{.bar,.warn{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">לו"ז בית ספרי</h1>
+  <p class="sub" id="sub"></p>
+</header>
+
+<div class="bar" role="toolbar" aria-label="תצוגה וסינון">
+  <div class="seg" role="group" aria-label="תצוגה">
+    <button data-v="month" aria-pressed="true">לוח שנה</button>
+    <button data-v="gantt" aria-pressed="false">ציר זמן</button>
+    <button data-v="list" aria-pressed="false">רשימה</button>
+  </div>
+  <select id="fCat" aria-label="קטגוריה"><option value="">כל הקטגוריות</option></select>
+  <select id="fGrade" aria-label="שכבה"><option value="">כל השכבות</option></select>
+  <input id="q" type="search" placeholder="חיפוש אירוע" aria-label="חיפוש">
+</div>
+<p class="warn" id="warn" hidden></p>
+<main>
+  <div class="legend" id="legend"></div>
+  <div class="panel" id="view"></div>
+</main>
+
+<dialog id="dlg"></dialog>
+
+<script>
+/* ===== הגדרות: כאן מחברים את הגיליון ===== */
+const CONFIG = {
+  TITLE: 'לו"ז בית ספרי',
+  // File > Share > Publish to web > גיליון Events > CSV  → מדביקים את הקישור כאן
+  CSV_URL: '',
+  REFRESH_MINUTES: 10
+};
+/* ========================================= */
+
+const SAMPLE = [
+ {ID:1,Title:"מבחן מחצית א' במתמטיקה",Category:"מבחנים",StartDate:"2026-11-01",EndDate:"2026-11-01",Grade:"שכבה ט'",Location:"כיתות אם",Status:"מתוכנן",Notes:"חומר: פרקים 1-3"},
+ {ID:2,Title:"טקס יום הזיכרון",Category:"טקסים",StartDate:"2026-11-10",EndDate:"2026-11-10",Grade:"כל בית הספר",Location:"אולם ספורט",Status:"מתוכנן",Notes:"שעה שלישית, תלבושת אחידה"},
+ {ID:3,Title:"חופשת חנוכה",Category:"חגים וחופשות",StartDate:"2026-12-05",EndDate:"2026-12-12",Grade:"כל בית הספר",Location:"-",Status:"מתוכנן",Notes:"אין לימודים"},
+ {ID:4,Title:"טיול שנתי מדבר יהודה",Category:"טיולים",StartDate:"2026-11-22",EndDate:"2026-11-24",Grade:"שכבה יא'",Location:"דרום",Status:"מתוכנן",Notes:"יציאה ב-06:00 מגרש חנייה"},
+ {ID:5,Title:'בוחן אנגלית - 5 יח"ל',Category:"מבחנים",StartDate:"2026-11-04",EndDate:"2026-11-04",Grade:"שכבה יב'",Location:"מעבדת שפות",Status:"מתוכנן",Notes:"השמעה בשעה שנייה"},
+ {ID:6,Title:"יום הורים מחצית א'",Category:"אירועים בית ספריים",StartDate:"2026-12-18",EndDate:"2026-12-18",Grade:"כל בית הספר",Location:"כיתות אם",Status:"מתוכנן",Notes:"שעות 16:00-20:00"},
+ {ID:7,Title:"סדנת זהירות בדרכים",Category:"פעילויות העשרה",StartDate:"2026-11-15",EndDate:"2026-11-15",Grade:"שכבה ז'",Location:"אודיטוריום",Status:"מתוכנן",Notes:"בשיתוף עיריית עפולה"}
+];
+const PALETTE = {"מבחנים":"#c2410c","טקסים":"#6d28d9","חגים וחופשות":"#0f766e","טיולים":"#15803d","אירועים בית ספריים":"#1d4ed8","פעילויות העשרה":"#be185d"};
+const EXTRA = ["#a16207","#475569","#0e7490","#9f1239"];
+const MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+const DAYS = ["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"];
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let all = [], view = 'month', cursor = new Date(), usingSample = false;
+cursor = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+
+function parseCSV(t){
+  const rows=[];let r=[],f='',q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){ if(c=='"'){ if(t[i+1]=='"'){f+='"';i++}else q=false } else f+=c }
+    else if(c=='"') q=true;
+    else if(c==','){r.push(f);f=''}
+    else if(c=='\n'){r.push(f);rows.push(r);r=[];f=''}
+    else if(c!='\r') f+=c;
+  }
+  if(f||r.length){r.push(f);rows.push(r)}
+  const h=rows.shift().map(x=>x.trim());
+  return rows.filter(x=>x.some(v=>v.trim())).map(x=>Object.fromEntries(h.map((k,i)=>[k,(x[i]||'').trim()])));
+}
+function pd(s){
+  if(!s) return null; s=String(s).trim();
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m) return new Date(+m[1],m[2]-1,+m[3],12);
+  m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/); if(m){const y=+m[3]<100?2000+ +m[3]:+m[3];return new Date(y,m[2]-1,+m[1],12)}
+  return null;
+}
+function normalize(rows){
+  return rows.map(r=>{const s=pd(r.StartDate),e=pd(r.EndDate)||s;return {...r,s,e:e&&s&&e<s?s:e}})
+    .filter(r=>r.s&&r.Title).sort((a,b)=>a.s-b.s||a.e-b.e);
+}
+const colorOf = (()=>{const m={...PALETTE};let i=0;return c=>m[c]||(m[c]=EXTRA[i++%EXTRA.length])})();
+const fmt = d => d.getDate()+' ב'+MONTHS[d.getMonth()];
+const range = e => e.e-e.s>0 ? fmt(e.s)+' – '+fmt(e.e) : fmt(e.s)+' '+e.s.getFullYear();
+const sameDay=(a,b)=>a.getFullYear()==b.getFullYear()&&a.getMonth()==b.getMonth()&&a.getDate()==b.getDate();
+
+function filtered(){
+  const c=$('#fCat').value,g=$('#fGrade').value,q=$('#q').value.trim();
+  return all.filter(e=>(!c||e.Category==c)&&(!g||e.Grade==g)&&(!q||(e.Title+' '+e.Notes+' '+e.Location).includes(q)));
+}
+function fillFilters(){
+  for(const [id,key] of [['#fCat','Category'],['#fGrade','Grade']]){
+    const sel=$(id),cur=sel.value,first=sel.options[0];
+    sel.innerHTML='';sel.append(first);
+    [...new Set(all.map(e=>e[key]).filter(Boolean))].forEach(v=>sel.append(new Option(v,v)));
+    sel.value=cur;
+  }
+  $('#legend').innerHTML=[...new Set(all.map(e=>e.Category))].map(c=>`<span><i class="dot" style="background:${colorOf(c)}"></i>${esc(c)}</span>`).join('');
+}
+function chip(e){
+  return `<button class="chip ev ${e.Status=='בוטל'?'cancel':''}" style="background:${colorOf(e.Category)}" data-id="${esc(e.ID)}" title="${esc(e.Title)}">${esc(e.Title)}</button>`;
+}
+function renderMonth(list){
+  const y=cursor.getFullYear(),m=cursor.getMonth(),first=new Date(y,m,1),start=new Date(y,m,1-first.getDay(),12),today=new Date();
+  let h=`<div class="mnav"><button id="next" aria-label="חודש הבא">›</button><h2>${MONTHS[m]} ${y}</h2><button id="prev" aria-label="חודש קודם">‹</button></div><div class="grid">`;
+  h+=DAYS.map(d=>`<div class="dh">${d}</div>`).join('');
+  for(let i=0;i<42;i++){
+    const d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i,12);
+    if(i>=35&&d.getMonth()!=m)break;
+    const ev=list.filter(e=>d>=new Date(e.s.getFullYear(),e.s.getMonth(),e.s.getDate())&&d<=new Date(e.e.getFullYear(),e.e.getMonth(),e.e.getDate(),23));
+    h+=`<div class="day ${d.getMonth()!=m?'off':''} ${sameDay(d,today)?'today':''}"><span class="n">${d.getDate()}</span>${ev.map(chip).join('')}</div>`;
+  }
+  return h+'</div>';
+}
+function renderGantt(list){
+  if(!list.length) return '<div class="empty">אין אירועים להצגה</div>';
+  const min=new Date(Math.min(...list.map(e=>e.s))),max=new Date(Math.max(...list.map(e=>e.e)));
+  const rs=new Date(min.getFullYear(),min.getMonth(),1,12),re=new Date(max.getFullYear(),max.getMonth()+1,0,12);
+  const tot=Math.round((re-rs)/864e5)+1,pct=d=>(Math.round((d-rs)/864e5)/tot*100);
+  let months='',d=new Date(rs);
+  while(d<=re){const dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();months+=`<div style="width:${dim/tot*100}%">${MONTHS[d.getMonth()]} ${d.getFullYear()}</div>`;d=new Date(d.getFullYear(),d.getMonth()+1,1,12)}
+  const t=new Date();
+  const tl=t>=rs&&t<=re?`<div class="tl" style="inset-inline-start:${pct(t)}%"></div>`:'';
+  let h=`<div class="gscroll"><div class="gw"><div class="grow head"><div class="glabel">אירוע</div><div class="months">${months}</div></div>`;
+  for(const e of list){
+    const w=Math.max((Math.round((e.e-e.s)/864e5)+1)/tot*100,.6);
+    h+=`<div class="grow"><div class="glabel ${e.Status=='בוטל'?'cancel':''}">${esc(e.Title)}<small>${esc(e.Category)}</small></div>
+    <div class="track"><button class="bar1 ev ${e.Status=='בוטל'?'cancel':''}" aria-label="${esc(e.Title)}" data-id="${esc(e.ID)}" style="border:0;background:${colorOf(e.Category)};inset-inline-start:${pct(e.s)}%;width:${w}%"></button></div></div>`;
+  }
+  return h+`<div style="position:absolute;top:0;bottom:0;inset-inline-start:230px;inset-inline-end:0;pointer-events:none"><div style="position:relative;height:100%">${tl}</div></div></div></div>`;
+}
+function renderList(list){
+  if(!list.length) return '<div class="empty">אין אירועים להצגה</div>';
+  return list.map(e=>`<button class="item ev ${e.Status=='בוטל'?'cancel':''}" data-id="${esc(e.ID)}"><i style="background:${colorOf(e.Category)}"></i><div><b>${esc(e.Title)}</b><span>${esc(e.Category)} · ${esc(e.Grade)}</span></div><div class="when">${range(e)}</div></button>`).join('');
+}
+function render(){
+  const list=filtered();
+  $('#view').innerHTML=view=='month'?renderMonth(list):view=='gantt'?renderGantt(list):renderList(list);
+  const p=$('#prev'),n=$('#next');
+  if(p){p.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()-1,1);render()};n.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);render()}}
+}
+$('#view').addEventListener('click',ev=>{
+  const b=ev.target.closest('[data-id]');if(!b)return;
+  const e=all.find(x=>String(x.ID)==b.dataset.id);if(!e)return;
+  const row=(k,v)=>v&&v!='-'?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
+  $('#dlg').innerHTML=`<div class="dh2" style="background:${colorOf(e.Category)}"><h3>${esc(e.Title)}</h3></div><dl>${row('תאריך',range(e))}${row('קטגוריה',e.Category)}${row('שכבה',e.Grade)}${row('מיקום',e.Location)}${row('סטטוס',e.Status)}${row('הערות',e.Notes)}</dl><button class="x" onclick="this.closest('dialog').close()">סגירה</button>`;
+  $('#dlg').showModal();
+});
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
+  view=b.dataset.v;document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x==b));render();
+});
+['#fCat','#fGrade'].forEach(s=>$(s).onchange=render);$('#q').oninput=render;
+
+async function load(){
+  $('#title').textContent=CONFIG.TITLE;document.title=CONFIG.TITLE;
+  try{
+    if(!CONFIG.CSV_URL) throw new Error('no url');
+    const res=await fetch(CONFIG.CSV_URL+(CONFIG.CSV_URL.includes('?')?'&':'?')+'t='+Date.now());
+    if(!res.ok) throw new Error(res.status);
+    all=normalize(parseCSV(await res.text()));usingSample=false;
+    $('#warn').hidden=true;
+    $('#sub').textContent='עודכן '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+  }catch(err){
+    if(!all.length){all=normalize(SAMPLE);usingSample=true}
+    const w=$('#warn');w.hidden=false;
+    w.textContent=CONFIG.CSV_URL?'לא הצלחנו לטעון את הגיליון, מוצגים נתונים אחרונים.':'מוצגים נתוני דוגמה. כדי לחבר את הגיליון יש להדביק קישור CSV ב-CONFIG.';
+    $('#sub').textContent='';
+  }
+  if(all.length&&view=='month'&&!usingSample===false){/* keep cursor on sample month */}
+  if(usingSample&&all.length)cursor=new Date(all[0].s.getFullYear(),all[0].s.getMonth(),1);
+  fillFilters();render();
+}
+load();
+if(CONFIG.CSV_URL)setInterval(load,CONFIG.REFRESH_MINUTES*60000);
+</script>
+</body>
+</html>
