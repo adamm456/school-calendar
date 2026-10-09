@@ -44,8 +44,16 @@ main{max-width:1200px;margin:auto;padding:4px 20px 40px}
 .gl{padding:6px 12px;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gl small{display:block;color:var(--mute);font-size:12px}
 .tk{position:relative;height:38px;border-inline-start:1px solid var(--line)}
-.days{display:flex;height:30px}.days span{flex:1;text-align:center;padding-top:6px;font-size:12px;border-inline-end:1px solid var(--line)}
+.days{display:flex;height:46px}
+.days span{flex:1;min-width:0;text-align:center;padding-top:5px;font-size:13px;line-height:1.2;border-inline-end:1px solid var(--line);color:var(--ink);transition:background .1s}
+.days small{display:block;font-size:11px;color:var(--mute);font-weight:400}
 .days .wk{background:var(--off)}
+.days .hl{background:var(--accent);color:#fff}.days .hl small{color:#fff}
+.tk{background-image:linear-gradient(to right,var(--line) 1px,transparent 1px)}
+.gr.dim{opacity:.4}.gr.on{background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.hv{position:absolute;top:0;bottom:0;inset-inline-start:240px;inset-inline-end:0;pointer-events:none;z-index:3}
+.hv i{position:absolute;top:0;bottom:0;width:2px;margin-inline-start:-1px;background:var(--accent);box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 25%,transparent)}
+.gw{cursor:crosshair}.gw .bar1{cursor:pointer}
 .bar1{position:absolute;top:9px;height:20px;border:0;border-radius:5px;min-width:6px;cursor:pointer}
 .tl{position:absolute;top:0;bottom:0;width:2px;background:var(--today);pointer-events:none;z-index:2}
 .item{display:grid;grid-template-columns:6px 1fr auto;gap:12px;padding:11px 14px;border:0;border-bottom:1px solid var(--line);align-items:center;width:100%;text-align:start;background:none;color:inherit;font:inherit;cursor:pointer}
@@ -57,7 +65,7 @@ dialog::backdrop{background:#0008}
 .dh2{padding:16px 18px;color:#fff}.dh2 h3{margin:0;font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:21px;line-height:1.35}
 dl{margin:0;padding:12px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px}dd{margin:0}
 .x{margin:0 18px 16px;font:inherit;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
-@media (max-width:640px){.day{min-height:74px}.chip{font-size:11px;padding:1px 3px}.n small{display:none}.gr{grid-template-columns:150px 1fr}}
+@media (max-width:640px){.days small{display:none}.days{height:34px}.day{min-height:74px}.chip{font-size:11px;padding:1px 3px}.n small{display:none}.gr{grid-template-columns:150px 1fr}}
 @media print{.bar,.note{display:none}}
 </style>
 </head>
@@ -189,12 +197,30 @@ function renderGantt(list){
   const ev=list.filter(e=>e.sn<=b&&e.en>=a),t=dn(new Date());
   let h=nav(MONTHS[m]+' '+y);
   if(!ev.length)return h+'<div class="empty">אין אירועים בחודש זה</div>';
-  h+=`<div class="gs"><div class="gw"><div class="gr head"><div class="gl">אירוע</div><div class="days">${Array.from({length:dim},(_,i)=>`<span class="${new Date(y,m,i+1).getDay()>=5?'wk':''}">${i+1}</span>`).join('')}</div></div>`;
+  h+=`<div class="gs"><div class="gw"><div class="gr head"><div class="gl">אירוע</div><div class="days">${Array.from({length:dim},(_,i)=>{const w=new Date(y,m,i+1).getDay();return `<span class="${w>=5?'wk':''}">${i+1}<small>${DAYS[w].slice(0,1)}׳</small></span>`}).join('')}</div></div>`;
   for(const e of ev){
     const s=Math.max(e.sn,a),f=Math.min(e.en,b);
-    h+=`<div class="gr"><div class="gl" title="${esc(e.title)}">${esc(e.title)}<small>${esc(e.aud)}</small></div><div class="tk"><button class="bar1" data-id="${e.id}" aria-label="${esc(e.title)}" style="background:${col(e.group)};inset-inline-start:${(s-a)/dim*100}%;width:${(f-s+1)/dim*100}%"></button>${t>=a&&t<=b?`<div class="tl" style="inset-inline-start:${(t-a+.5)/dim*100}%"></div>`:''}</div></div>`;
+    h+=`<div class="gr" data-a="${s-a+1}" data-b="${f-a+1}"><div class="gl" title="${esc(e.title)}">${esc(e.title)}<small>${esc(e.aud)}</small></div><div class="tk" style="background-size:calc(100%/${dim}) 100%"><button class="bar1" data-id="${e.id}" aria-label="${esc(e.title)}" style="background:${col(e.group)};inset-inline-start:${(s-a)/dim*100}%;width:${(f-s+1)/dim*100}%"></button>${t>=a&&t<=b?`<div class="tl" style="inset-inline-start:${(t-a+.5)/dim*100}%"></div>`:''}</div></div>`;
   }
-  return h+'</div></div>';
+  return h+'<div class="hv" hidden><i></i></div></div></div>';
+}
+function gHover(){
+  const gw=document.querySelector('.gw');if(!gw)return;
+  const dh=gw.querySelector('.days'),hv=gw.querySelector('.hv'),line=hv.firstElementChild;
+  const spans=[...dh.children],rows=[...gw.querySelectorAll('.gr[data-a]')],dim=spans.length;
+  let last=-1;
+  const clear=()=>{last=-1;hv.hidden=true;spans.forEach(x=>x.classList.remove('hl'));rows.forEach(r=>r.classList.remove('dim','on'))};
+  gw.onpointermove=ev=>{
+    const r=dh.getBoundingClientRect();
+    if(ev.clientX<r.left||ev.clientX>r.right)return clear();
+    const i=Math.min(dim-1,Math.max(0,Math.floor((r.right-ev.clientX)/r.width*dim)));
+    if(i==last)return;
+    if(last>=0)spans[last].classList.remove('hl');
+    last=i;hv.hidden=false;spans[i].classList.add('hl');
+    line.style.insetInlineStart=((i+.5)/dim*100)+'%';
+    rows.forEach(rw=>{const on=+rw.dataset.a<=i+1&&i+1<=+rw.dataset.b;rw.classList.toggle('on',on);rw.classList.toggle('dim',!on)});
+  };
+  gw.onpointerleave=clear;
 }
 function renderList(list){
   const q=$('#q').value.trim(),y=cur.getFullYear(),m=cur.getMonth(),a=dn(new Date(y,m,1)),b=dn(new Date(y,m+1,0));
@@ -207,6 +233,7 @@ function render(){
   const list=filtered(),q=$('#q').value.trim();
   $('#view').innerHTML=view=='month'?renderMonth(list):view=='gantt'?renderGantt(list):renderList(list);
   const p=$('#prev'),n=$('#next');
+  if(view=='gantt')gHover();
   if(p){p.onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);render()};n.onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);render()}}
   const nt=$('#note');
   if(q&&view!='list'){nt.hidden=false;nt.innerHTML=`נמצאו ${list.length} אירועים בשנה כולה. <button id="toList">הצגה ברשימה</button>`;$('#toList').onclick=()=>setView('list')}
