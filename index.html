@@ -78,7 +78,9 @@ dl{margin:0;padding:12px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px
 .xt tbody tr:hover td.d,.xt tbody tr:hover td.w{background:var(--accent);color:#fff}
 .xt tbody tr:hover td.d small{color:#fff}
 .ce{display:block;width:100%;text-align:start;border:0;background:none;color:inherit;font:inherit;font-size:13.5px;line-height:1.35;padding:2px 6px;margin:2px 0;border-inline-start:4px solid var(--c);border-radius:3px;cursor:pointer}
-@media (max-width:640px){.days small{display:none}.days{height:34px}.day{min-height:74px}.chip{font-size:11px;padding:1px 3px}.n small{display:none}.gr{grid-template-columns:150px 1fr}}
+#today.tb{font:inherit;font-weight:600;color:#fff;background:var(--accent);border:0;border-radius:10px;padding:8px 14px;cursor:pointer}
+@media (prefers-color-scheme:dark){#today.tb{color:#10151e}}
+@media (max-width:640px){.dh{font-size:11px;padding:6px 2px}.days small{display:none}.days{height:34px}.day{min-height:74px}.chip{font-size:11px;padding:1px 3px}.n small{display:none}.gr{grid-template-columns:150px 1fr}}
 @media print{.bar,.note{display:none}}
 </style>
 </head>
@@ -93,6 +95,7 @@ dl{margin:0;padding:12px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px
   <select id="fGroup" aria-label="סוג"><option value="">כל הסוגים</option></select>
   <select id="fAud" aria-label="קהל יעד"><option value="">כל הקהלים</option></select>
   <input id="q" type="search" placeholder="חיפוש אירוע" aria-label="חיפוש">
+  <button id="today" class="tb" type="button"></button>
 </div>
 <div class="note" id="note" hidden></div>
 <main><div class="legend" id="legend"></div><div class="panel" id="view"></div></main>
@@ -193,16 +196,16 @@ function fillFilters(){
   $('#legend').innerHTML=[...new Set(all.map(e=>e.group))].map(g=>`<span><i class="dot" style="background:${col(g)}"></i>${esc(g)}</span>`).join('');
 }
 const chip=e=>`<button class="chip" style="background:${col(e.group)}" data-id="${e.id}" title="${esc(e.title)}">${esc(e.title)}</button>`;
-const nav=t=>`<div class="mnav"><button id="next" aria-label="חודש הבא">›</button><h2>${t}</h2><button id="prev" aria-label="חודש קודם">‹</button></div>`;
+const nav=t=>`<div class="mnav"><button id="prev" aria-label="חודש קודם">‹</button><h2>${t}</h2><button id="next" aria-label="חודש הבא">›</button></div>`;
 
 function renderMonth(list){
   const y=cur.getFullYear(),m=cur.getMonth(),start=new Date(y,m,1-new Date(y,m,1).getDay(),12),t=dn(new Date());
-  let h=nav(MONTHS[m]+' '+y)+'<div class="grid">'+DAYS.map(d=>`<div class="dh">${d.slice(0,3)}׳</div>`).join('');
+  let h=nav(MONTHS[m]+' '+y)+'<div class="grid">'+DAYS.map(d=>`<div class="dh">${d}</div>`).join('');
   for(let i=0;i<42;i++){
     const d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i,12),n=dn(d);
     if(i>=35&&d.getMonth()!=m)break;
     const ev=list.filter(e=>e.sn<=n&&e.en>=n);
-    h+=`<div class="day ${d.getMonth()!=m?'out':''} ${d.getDay()>=5?'wk':''} ${n==t?'today':''}"><span class="n"><b>${d.getDate()}</b><small>${esc(hebrew[n]||'')}</small></span>${ev.slice(0,3).map(chip).join('')}${ev.length>3?`<button class="more" data-day="${n}">+${ev.length-3} נוספים</button>`:''}</div>`;
+    h+=`<div class="day ${d.getMonth()!=m?'out':''} ${d.getDay()==6?'wk':''} ${n==t?'today':''}"><span class="n"><b>${d.getDate()}</b><small>${esc(hebrew[n]||'')}</small></span>${ev.slice(0,3).map(chip).join('')}${ev.length>3?`<button class="more" data-day="${n}">+${ev.length-3} נוספים</button>`:''}</div>`;
   }
   return h+'</div>';
 }
@@ -218,7 +221,7 @@ function renderTable(list){
   const t=dn(new Date());
   for(let d=1;d<=dim;d++){
     const dt=new Date(y,m,d,12),n=dn(dt),w=dt.getDay();
-    h+=`<tr class="${w>=5?'wk':''} ${n==t?'today':''}"><td class="d">${String(d).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${y}<small>${esc(hebrew[n]||'')}</small></td><td class="w">${DAYS[w]}</td>`
+    h+=`<tr class="${w==6?'wk':''} ${n==t?'today':''}"><td class="d">${String(d).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${y}<small>${esc(hebrew[n]||'')}</small></td><td class="w">${DAYS[w]}</td>`
       +cols.map(c=>`<td>${list.filter(e=>e.aud==c.aud&&e.sn<=n&&e.en>=n).map(e=>`<button class="ce" style="--c:${col(e.group)}" data-id="${e.id}">${esc(e.title)}</button>`).join('')}</td>`).join('')+'</tr>';
   }
   return h+'</tbody></table></div>';
@@ -228,7 +231,7 @@ function renderList(list){
   const ev=q?list:list.filter(e=>e.sn<=b&&e.en>=a);
   const head=q?`<div class="mnav"><h2>תוצאות חיפוש בכל השנה (${ev.length})</h2></div>`:nav(MONTHS[m]+' '+y);
   if(!ev.length)return head+'<div class="empty">אין אירועים להצגה</div>';
-  return head+ev.map(e=>`<button class="item" data-id="${e.id}"><i style="background:${col(e.group)}"></i><div><b>${esc(e.title)}</b><span>${esc(e.aud)}</span></div><div class="when">${DAYS[e.s.getDay()].slice(0,3)}׳ ${range(e)}</div></button>`).join('');
+  return head+ev.map(e=>`<button class="item" data-id="${e.id}"><i style="background:${col(e.group)}"></i><div><b>${esc(e.title)}</b><span>${esc(e.aud)}</span></div><div class="when">${DAYS[e.s.getDay()]} ${range(e)}</div></button>`).join('');
 }
 function render(){
   const list=filtered(),q=$('#q').value.trim();
@@ -265,7 +268,15 @@ async function fetchTabs(){
     if(!r.ok)throw 0;return[await r.text(),n]}));
   throw 0;
 }
+function goToday(){
+  const n=new Date();cur=new Date(n.getFullYear(),n.getMonth(),1);render();
+  const el=document.querySelector('tr.today,.day.today');
+  if(el)el.scrollIntoView({block:'center',behavior:'smooth'});
+}
+$('#today').onclick=goToday;
+function todayLabel(){const n=new Date();$('#today').textContent='היום · '+DAYS[n.getDay()]+' '+fmt(n)}
 async function load(){
+  todayLabel();
   $('#title').textContent=CONFIG.TITLE;document.title=CONFIG.TITLE;
   let tabs,live=true;
   try{tabs=await fetchTabs()}catch(e){tabs=Object.entries(EMBEDDED).map(([n,t])=>[t,n]);live=false}
