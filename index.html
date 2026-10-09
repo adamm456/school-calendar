@@ -3,236 +3,258 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>לו"ז בית ספרי</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>לו"ז שנתי</title>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Secular+One&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--ink:#16233a;--mute:#5d6b82;--line:#dde3ea;--accent:#1f4fd8;--today:#e5484d}
-@media (prefers-color-scheme:dark){:root{--bg:#10151e;--card:#182030;--ink:#e8edf5;--mute:#93a0b5;--line:#27324a;--accent:#7aa2ff}}
+:root{--bg:#f4f6f8;--card:#fff;--ink:#16233a;--mute:#5d6b82;--line:#dde3ea;--accent:#1f4fd8;--today:#e5484d;--off:#eef1f5}
+@media (prefers-color-scheme:dark){:root{--bg:#10151e;--card:#182030;--ink:#e8edf5;--mute:#93a0b5;--line:#27324a;--accent:#7aa2ff;--off:#141b29}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Assistant,Arial,sans-serif;font-size:16px;line-height:1.45}
-header{padding:20px 20px 12px;max-width:1200px;margin:auto}
+header{padding:20px 20px 8px;max-width:1200px;margin:auto}
 h1{font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:clamp(26px,5vw,38px);margin:0 0 4px}
-.sub{color:var(--mute);margin:0}
+.sub{color:var(--mute);margin:0;font-size:14px}
 .bar{max-width:1200px;margin:auto;padding:8px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
 .seg button{border:0;background:none;color:var(--ink);font:inherit;padding:8px 14px;cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);font-weight:600}
-select,input[type=search]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
-button:focus-visible,select:focus-visible,input:focus-visible,.ev:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-main{max-width:1200px;margin:auto;padding:8px 20px 40px}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 14px;font-size:14px;color:var(--mute)}
-.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px;vertical-align:baseline}
+select,input[type=search]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;max-width:100%}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+main{max-width:1200px;margin:auto;padding:4px 20px 40px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 12px;font-size:14px;color:var(--mute)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:5px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.ev{cursor:pointer}.cancel{text-decoration:line-through;opacity:.55}
-/* month */
+.note{max-width:1200px;margin:auto;padding:4px 20px;color:var(--mute);font-size:14px}
+.note button{font:inherit;color:var(--accent);background:none;border:0;cursor:pointer;text-decoration:underline}
+.cancel{text-decoration:line-through;opacity:.55}
 .mnav{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
 .mnav h2{margin:0;font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:22px}
 .mnav button{border:1px solid var(--line);background:none;color:var(--ink);border-radius:8px;width:38px;height:34px;font-size:18px;cursor:pointer}
-.grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 .dh{padding:6px;text-align:center;font-weight:600;color:var(--mute);font-size:14px;border-bottom:1px solid var(--line)}
-.day{min-height:104px;padding:4px;border-inline-start:1px solid var(--line);border-bottom:1px solid var(--line)}
-.day.off{background:color-mix(in srgb,var(--bg) 60%,transparent)}
-.day .n{font-size:13px;color:var(--mute);padding:0 4px}
-.day.today .n{background:var(--today);color:#fff;border-radius:10px;padding:1px 7px;font-weight:700}
-.chip{display:block;width:100%;text-align:start;border:0;font:inherit;font-size:13px;color:#fff;border-radius:5px;padding:2px 6px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* gantt */
-.gscroll{overflow-x:auto}
-.gw{min-width:980px;position:relative}
-.grow{display:grid;grid-template-columns:230px 1fr;border-bottom:1px solid var(--line);align-items:center}
-.grow.head{position:sticky;top:0;background:var(--card);font-weight:600;font-size:14px}
-.glabel{padding:7px 12px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.glabel small{color:var(--mute);display:block;font-size:12px}
-.track{position:relative;height:36px;border-inline-start:1px solid var(--line)}
-.months{display:flex;height:34px}
-.months div{border-inline-end:1px solid var(--line);padding:7px 8px;font-size:13px;color:var(--mute);overflow:hidden;white-space:nowrap}
-.bar1{position:absolute;top:8px;height:20px;border-radius:5px;min-width:7px}
-.tl{position:absolute;top:0;bottom:0;width:2px;background:var(--today);z-index:2;pointer-events:none}
-/* list */
-.item{display:grid;grid-template-columns:6px 1fr auto;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:center;width:100%;text-align:start;background:none;border-inline:0;border-top:0;color:inherit;font:inherit}
-.item i{align-self:stretch;border-radius:3px}
-.item b{display:block}.item span{color:var(--mute);font-size:14px}
+.day{min-height:112px;padding:4px;border-inline-start:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0}
+.day.out{opacity:.35}.day.wk{background:var(--off)}
+.n{font-size:13px;color:var(--mute);padding:0 4px;display:flex;justify-content:space-between}
+.n small{font-size:11px;opacity:.8}
+.day.today .n b{background:var(--today);color:#fff;border-radius:10px;padding:0 7px}
+.chip{display:block;width:100%;text-align:start;border:0;font:inherit;font-size:12.5px;line-height:1.3;color:#fff;border-radius:5px;padding:2px 6px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.more{background:none;border:0;color:var(--accent);font:inherit;font-size:12px;cursor:pointer;padding:2px 4px}
+.gs{overflow-x:auto}.gw{min-width:980px;position:relative}
+.gr{display:grid;grid-template-columns:240px 1fr;border-bottom:1px solid var(--line);align-items:center}
+.gr.head{background:var(--card);font-weight:600;font-size:13px;color:var(--mute)}
+.gl{padding:6px 12px;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gl small{display:block;color:var(--mute);font-size:12px}
+.tk{position:relative;height:38px;border-inline-start:1px solid var(--line)}
+.days{display:flex;height:30px}.days span{flex:1;text-align:center;padding-top:6px;font-size:12px;border-inline-end:1px solid var(--line)}
+.days .wk{background:var(--off)}
+.bar1{position:absolute;top:9px;height:20px;border:0;border-radius:5px;min-width:6px;cursor:pointer}
+.tl{position:absolute;top:0;bottom:0;width:2px;background:var(--today);pointer-events:none;z-index:2}
+.item{display:grid;grid-template-columns:6px 1fr auto;gap:12px;padding:11px 14px;border:0;border-bottom:1px solid var(--line);align-items:center;width:100%;text-align:start;background:none;color:inherit;font:inherit;cursor:pointer}
+.item i{align-self:stretch;border-radius:3px}.item b{display:block}.item span{color:var(--mute);font-size:14px}
 .when{font-size:14px;color:var(--mute);white-space:nowrap}
 .empty{padding:40px;text-align:center;color:var(--mute)}
-dialog{border:0;border-radius:14px;padding:0;max-width:440px;width:92vw;background:var(--card);color:var(--ink);box-shadow:0 20px 60px #0006}
+dialog{border:0;border-radius:14px;padding:0;max-width:460px;width:92vw;background:var(--card);color:var(--ink);box-shadow:0 20px 60px #0006}
 dialog::backdrop{background:#0008}
-.dh2{padding:16px 18px;color:#fff}.dh2 h3{margin:0;font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:22px}
-dl{margin:0;padding:14px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px}dd{margin:0}
+.dh2{padding:16px 18px;color:#fff}.dh2 h3{margin:0;font-family:'Secular One',Assistant,sans-serif;font-weight:400;font-size:21px;line-height:1.35}
+dl{margin:0;padding:12px 18px}dt{color:var(--mute);font-size:13px;margin-top:8px}dd{margin:0}
 .x{margin:0 18px 16px;font:inherit;padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink);cursor:pointer}
-.warn{margin:0 20px;max-width:1160px;margin-inline:auto;padding:8px 20px;color:var(--mute);font-size:14px}
-@media (max-width:640px){.day{min-height:70px}.chip{font-size:11px;padding:1px 3px}.grow{grid-template-columns:150px 1fr}}
-@media print{.bar,.warn{display:none}}
+@media (max-width:640px){.day{min-height:74px}.chip{font-size:11px;padding:1px 3px}.n small{display:none}.gr{grid-template-columns:150px 1fr}}
+@media print{.bar,.note{display:none}}
 </style>
 </head>
 <body>
-<header>
-  <h1 id="title">לו"ז בית ספרי</h1>
-  <p class="sub" id="sub"></p>
-</header>
-
+<header><h1 id="title"></h1><p class="sub" id="sub"></p></header>
 <div class="bar" role="toolbar" aria-label="תצוגה וסינון">
   <div class="seg" role="group" aria-label="תצוגה">
     <button data-v="month" aria-pressed="true">לוח שנה</button>
     <button data-v="gantt" aria-pressed="false">ציר זמן</button>
     <button data-v="list" aria-pressed="false">רשימה</button>
   </div>
-  <select id="fCat" aria-label="קטגוריה"><option value="">כל הקטגוריות</option></select>
-  <select id="fGrade" aria-label="שכבה"><option value="">כל השכבות</option></select>
+  <select id="fGroup" aria-label="סוג"><option value="">כל הסוגים</option></select>
+  <select id="fAud" aria-label="קהל יעד"><option value="">כל הקהלים</option></select>
   <input id="q" type="search" placeholder="חיפוש אירוע" aria-label="חיפוש">
 </div>
-<p class="warn" id="warn" hidden></p>
-<main>
-  <div class="legend" id="legend"></div>
-  <div class="panel" id="view"></div>
-</main>
-
+<div class="note" id="note" hidden></div>
+<main><div class="legend" id="legend"></div><div class="panel" id="view"></div></main>
 <dialog id="dlg"></dialog>
 
 <script>
-/* ===== הגדרות: כאן מחברים את הגיליון ===== */
+/* ===== חיבור לגיליון ===== */
 const CONFIG = {
-  TITLE: 'לו"ז בית ספרי',
-  // File > Share > Publish to web > גיליון Events > CSV  → מדביקים את הקישור כאן
-  CSV_URL: '',
+  TITLE: 'לו"ז שנתי - חטיבת אלה תשפ"ז',
+  SHEET_ID: '1SpJAfcBE9R1kUQhCx1J50fVXRDv8jQp_',                 // המזהה מתוך כתובת הגיליון: /spreadsheets/d/<כאן>/edit
+  TABS: ['ספטמבר','אוקטובר','נובמבר','דצמבר','ינואר','פברואר','מרץ','אפריל','מאי','יוני'],
+  CSV_URLS: [],                 // חלופה: קישורי "פרסום לאינטרנט" (CSV) לכל גיליון
+  HIDE_GROUPS: [],              // למשל ['פדגוגיה'] להסתרת אירועי צוות מהדף הציבורי
   REFRESH_MINUTES: 10
 };
-/* ========================================= */
+const EMBEDDED = {"ספטמבר": ",,,,,,,,,\n\"לו\"\"ז לחודש ספטמבר 2026 - תשפ\"\"ו - תשפ\"\"ז\",,,,,,,,,\nספטמבר,אלול- תשרי,פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה  ח',שכבה   ט', ,,\nתאריך,יום,,,,,,שם האירוע,,\n09/01/26,שלישי,,,,,,,,\n\"י\"\"ט \",,,,,,,פתיחת שנה,,\n09/02/26,רביעי,,,,,,,,\nכ',,,,,,,,,\n09/03/26,חמישי,,,,,,,,\n\"כ\"\"א\",,,,,,,,,\n09/04/26,שישי,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n09/05/26,שבת,,,,,,,,\n\"כ\"\"ג\",,,,,,,,,\n09/06/26,ראשון,,,,,,,,\n\"כ\"\"ד\",,,,,,,,,\n09/07/26,שני,,,,,,,,\n\"כ\"\"ה\",,,,,,,,,\n09/08/26,שלישי,,,,,,,,\n\"כ\"\"ו\",,,,,,,,,\n09/09/26,רביעי,,,,,,,,\n\"כ\"\"ז\",,,,,,,,,\n09/10/26,חמישי,,,,,,,,\n\"כ\"\"ח\",,,,,,,,,\n09/11/26,שישי,,,,,,,,\n\"כ\"\"ט\",,,,,,,ערב ראש השנה,,\n09/12/26,שבת,,,,,,\"ר\"\"ח תשרי\",,\nא' תשרי,,,,,,,ראש השנה,,\n09/13/26,ראשון,,,,,,,,\nב',,,,,,,ראש השנה,,\n09/14/26,שני,,,,,,,,\nג',,,,,,,צום גדליה,,\n09/15/26,שלישי,,,,,,,,\nד',,,,,,,,,\n09/16/26,רביעי,,,,,,,,\nה',,,,,,,,,\n09/17/26,חמישי,,,,,,,,\nו',,,,,,,,,\n09/18/26,שישי,,,,,,,,\nז',,,,,,,,,\n09/19/26,שבת,,,,,,,,\nח',,,,,,,,,\n09/20/26,ראשון,,,,,,,,\nט',,,,,,,ערב יום כיפור,,\n09/21/26,שני,,,,,,,,\nי',,,,,,,יום כיפור,,\n09/22/26,שלישי,,,,,,,,\n\"י\"\"א\",,,,,,,גשר,,\n09/23/26,רביעי,,,,,,,,\n\"י\"\"ב\",,,,,,,גשר,,\n09/24/26,חמישי,,,,,,,,\n\"י\"\"ג\",,,,,,,גשר,,\n09/25/26,שישי,,,,,,,,\n\"י\"\"ד\",,,,,,,ערב סוכות,,\n09/26/26,שבת,,,,,,,,\n\"ט\"\"ו\",,,,,,,סוכות,,\n09/27/26,ראשון,,,,,,,,\n\"ט\"\"ז\",,,,,,,\"א' חוה\"\"מ\",,\n09/28/26,שני,,,,,,,,\n\"י\"\"ז\",,,,,,,\"ב' חוה\"\"מ\",,\n09/29/26,שלישי,,,,,,,,\n\"י\"\"ח\",,,,,,,\"ג' חוה\"\"מ\",,\n09/30/26,רביעי,,,,,,,,\n\"י\"\"ט \",,,,,,,\"ד' חוה\"\"מ\",,\n", "אוקטובר": ",,,,,,,,,\n\"לו\"\"ז לחודש אוקטובר 2026 - תשפ\"\"ז\",,,,,,,,,\nאוקטובר,תשרי - חשוון,פדגוגיה,,,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ז',שכבה ח',שכבה ט',,\nתאריך,יום,,,,,,,שם האירוע,\n10/01/26,חמישי,,,,,,,,\nכ',,,,,,,,\"ה' חוה\"\"מ\",\n10/02/26,שישי,,,,,,,,\n\"כ\"\"א\",,,,,,,,הושענא רבה,\n10/03/26,שבת,,,,,,,,\n\"כ\"\"ב\",,,,,,,,שמחת תורה,\n10/04/26,ראשון,,,,,,,,\n\"כ\"\"ג\",,,ישיבת פרופיל ז' 13:00,ישיבת פרופיל ז' 13:00,,,,אסרו חג,\n10/05/26,שני,,ישיבת פרופיל  13:00,,,,,,\n\"כ\"\"ד\",,,,ישיבת פרופיל ז' 13:00,,,,יום הזכרון לאירועי השבעה באוקטובר,\n10/06/26,שלישי,,,,,,חשיפה להתרמות האגודה למלחמה בסרטן,,\n\"כ\"\"ה\",,,,,,,,,\n10/07/26,רביעי,,,,,,,,\n\"כ\"\"ו\",,,,,,,,,\n10/08/26,חמישי,,,,,,חשיפה לתכנית  יוניסטרים ,,\n\"כ\"\"ז\",,,,,,,,,\n10/09/26,שישי,,,,,,,,\n\"כ\"\"ח\",,,,,,,,,\n10/10/26,שבת,,,,,,,,\n\"כ\"\"ט\",,,,,,,,,\n10/11/26,ראשון,,הדרכה צוות מורים מדעים + מתמ'  720 ב-14:00  ,,מבדק עמית ז2,,,,\nל',,,,,,,,יום הזכרון לרחבעם זאבי,\n10/12/26,שני,,,,מבדק עמית ז1,,,,\nא',,,,,,,,\"ר\"\"ח חשוון\",\n10/13/26,שלישי,,,,מבדק עמית ז 3,,,,\nב',,,,,,,,,\n10/14/26,רביעי,,,,,,,,\nג',,,,,,,,,\n10/15/26,חמישי,,,,מבדק עמית ז4,\"סדנת התמודדיות רגשיות עמותת ער\"\"ן\",,,\nד',,,,,,,,,\n10/16/26,שישי,,,,,,,,\nה',,,,,,,,,\n10/17/26,שבת,,,,,,,,\nו',,,,,,,,,\n10/18/26,ראשון,,אסיפת הורים כללית,,בחירות מועצת תלמידים כיתתית ,בחירות מועצת תלמידים כיתתית ,בחירות מועצת תלמידים כיתתית ,אודישנים לחבורת הזמר זמרים 18:00,\nז',,,,,מבדק עמית ז7,,,,\n10/19/26,שני,,,,מבדק עמית ז5,,,,\nח',,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\n10/20/26,שלישי,,,,,,,,\nט',,,,,,,,,\n10/21/26,רביעי,,,,\"\"\"הסטורי של סבא\"\"  אשכול פיס\",,,,\nי',,,,,,,,,\n10/22/26,חמישי,,,,מבדק עמית ז6,,,,\n\"י\"\"א\",,,,,,,,יום הזכרון ליצחק רבין פעילות בכתות שיעור חינוך,\n10/23/26,שישי,,,,,,,,\n\"י\"\"ב\",,,,,,,,,\n10/24/26,שבת,,,,,,,,\n\"י\"\"ג\",,,,,,,,,\n10/25/26,ראשון,,,,,,,,\n\"י\"\"ד\",,,הדרכה אפילפסיה- כלל המורים 14:30,,בחירות מועצת תלמידים בית ספרית ,בחירות מועצת תלמידים בית ספרית ,בחירות מועצת תלמידים בית ספרית ,שעון חורף,\n10/26/26,שני,,,,,,,,\n\"ט\"\"ו\",,,,,,,,,\n10/27/26,שלישי,,,,,,,,\n\"ט\"\"ז\",,,,,,,,הבחירות לכנסת העשרים ושש,\n10/28/26,רביעי,,,,,,,,\n\"י\"\"ז\",,,,שכבה ז' יום גיבוש מעיין חרוד,,,,,\n10/29/26,חמישי,,,,,,,,\n\"י\"\"ח\",,,,,,,,,\n10/30/26,שישי,,,,,,,,\n\"י\"\"ט\",,,,,,,,,\n10/31/26,שבת,,,,,,,,\nכ',,,,,,,,,\n", "נובמבר": ",,,,,,,,,\n\"לו\"\"ז לחודש נובמבר 2026 - תשפ\"\"ז\",,,,,,,,,\nנובמבר,חשוון- כסליו,פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ז',שכבה ח',שכבה ט',,\nתאריך,יום,,,,,,,שם האירוע,\n11/01/26,ראשון,,,,,,,,\n\"כ\"\"א \",,,\"רכזות לשון: רונית, מאיה ליפשיץ, שירה מזרחי .בניית תלקיט שכבה ט' 14:00\",,,,,,\n11/02/26,שני,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n11/03/26,שלישי,,,,,,,,\n\"כ\"\"ג\",,,,,,,,,\n11/04/26,רביעי,,,,,,,,\n\"כ\"\"ד\",,,,,,,,,\n11/05/26,חמישי,,,,,,,,\n\"כ\"\"ה\",,,,,,,,,\n11/06/26,שישי,,,,,,,,\n\"כ\"\"ו\",,,,,,,,,\n11/07/26,שבת,,,,,,,,\n\"כ\"\"ז\",,,,,,,,,\n11/08/26,ראשון,,,,,,,,\n\"כ\"\"ח\",,,,,,,,,\n11/09/26,שני,,,,,,,,\n\"כ\"\"ט\",,,,,,,,חג הסיגד,\n11/10/26,שלישי,,,,,,,,\nל',,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\n11/11/26,רביעי,,,,,,,,\nא',,,,,,,,ראש חודש כסלו,\n11/12/26,חמישי,,,,,,,,\nב',,,,,,,,,\n11/13/26,שישי,,,,,,,,\nג',,,,,,,,,\n11/14/26,שבת,,,,,,,,\nד',,,,,,,,,\n11/15/26,ראשון,,,,,,,,\nה',,,ישיבות פדגוגיות מורחבות,,,,,,\n11/16/26,שני,,,,,,,,\nו',,,ישיבות פדגוגיות מורחבות,,,,,,\n11/17/26,שלישי,,,,,,,,\nז',,,ישיבות פדגוגיות מורחבות,,,יום גיבוש שכבה ח' מג'רסה אתר ספיר,,,\n11/18/26,רביעי,,,,,,,,\nח',,,ישיבות פדגוגיות מורחבות,,,,,,\n11/19/26,חמישי,,,,,,,,\nט',,,ישיבות פדגוגיות מורחבות,,,,,,\n11/20/26,שישי,,,,,,,,\nי',,,,,,,,,\n11/21/26,שבת,,,,,,,,\n\"י\"\"א\",,,,,,,,,\n11/22/26,ראשון,,,,,,,,\n\"י\"\"ב\",,,ישיבות פדגוגיות מורחבות,,,,,,\n11/23/26,שני,,,,,,,,\n\"י\"\"ג\",,,ישיבות פדגוגיות מורחבות,,,,,,\n11/24/26,שלישי,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\n\"י\"\"ד\",,,ישיבות פדגוגיות מורחבות,,,,יום גיבוש גולן ג'ילבון,,\n11/25/26,רביעי,,,,,,,,\n\"ט\"\"ו\",,,ישיבות פדגוגיות מורחבות,,,,,,\n11/26/26,חמישי,,,,,,,,\n\"ט\"\"ז\",,,ישיבות פדגוגיות מורחבות,,,,,,\n11/27/26,שישי,,,,,,,,\n\"י\"\"ז\",,,,,,,,,\n11/28/26,שבת,,,,,,,,\n\"י\"\"ח\",,,,,,,,,\n11/29/26,ראשון,,,,,,,,\n\"י\"\"ט\",,,ישיבות פדגוגיות מורחבות,,,,,,\n11/30/26,שני,,,,,,,,\nכ',,,ישיבות פדגוגיות מורחבות,,,,,,\n", "דצמבר": ",,,,,,,,,\n\"לו\"\"ז לחודש דצמבר2026 - תשפ\"\"ז\",,,,,,,,,\nדצמבר,כסלו - טבת,פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ז',שכבה ח',שכבה ט',,\nתאריך,יום,,,,,,,שם האירוע,\n12/01/26,שלישי,,,,,,,,\n\"כ\"\"א\",,,,,,,,,\n12/02/26,רביעי,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n12/03/26,חמישי,,,,,,,,\n\"כ\"\"ג\",,,,,,,,,\n12/04/26,שישי,,,,,,,ערב חנוכה נר ראשון,\n\"כ\"\"ד\",,,,,,,,,\n12/05/26,שבת,,,,,,,חנוכה,\n\"כ\"\"ה\",,,,,,,,,\n12/06/26,ראשון,,,,,,,חנוכה,\n\"כ\"\"ו\",,,,,,,,,\n12/07/26,שני,,,,,,,חנוכה,\n\"כ\"\"ז\",,,,,,,,,\n12/08/26,שלישי,,,,,,,חנוכה,\nכח,,,,,,,,,\n12/09/26,רביעי,,,,,,,חנוכה,\n\"כ\"\"ט\",,,,,,,,,\n12/10/26,חמישי,,,,,,,חנוכה,\nל',,,,,,,,,\n12/11/26,שישי,,,,,,,חנוכה,\nא',,,,,,,,\"ר\"\"ח טבת\",\n12/12/26,שבת,,,,,,,,\nב',,,,,,,,,\n12/13/26,ראשון,,,,,,,,\nג',,,,,,,,שבוע המודעות לסמים ואלכוהול,\n12/14/26,שני,,,,יום שיא - מניעת עישון,,,,\nד',,,,,\"הצגה \"\"עשן בלב\"\" \",,,,\n12/15/26,שלישי,,,,,,,,\nה',,,,,,,,,\n12/16/26,רביעי,,,,,,,,\nו',,,,,,,,,\n12/17/26,חמישי,,,,,,,,\nז',,,,,,,,,\n12/18/26,שישי,,,,,,,,\nח',,,,,,,,,\n12/19/26,שבת,,,,,,,,\nט',,,,,,,,,\n12/20/26,ראשון,,,,,,,,\nי',,,,,,,,,\n12/21/26,שני,,,,,,,,\n\"י\"\"א\",,,,,,,,,\n12/22/26,שלישי,,,,,,,,\n\"י\"\"ב\",,,,,,,,,\n12/23/26,רביעי,,,,,,,,\n\"י\"\"ג\",,,,,,,,,\n12/24/26,חמישי,,,,,,,,\n\"י\"\"ד\",,,,,,,,,\n12/25/26,שישי,,,,,,,,\n\"ט\"\"ו\",,,,,,,,,\n12/26/26,שבת,,,,,,,,\n\"ט\"\"ז\",,,,,,,,,\n12/27/26,ראשון,,,,,,,,\n\"י\"\"ז\",,,ישיבות מצומצמות,,,,,,\n12/28/26,שני,,,,,,שכבה ט- יום שיא מניעת השימוש בחומרים פסיכו אקטביים -,,\n\"י\"\"ח\",,,ישיבות מצומצמות,,,,\"הצגה \"\"אילו יכולתי\"\" (במקום מסטול) 10:30\",,\n12/29/26,שלישי,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\n\"י\"\"ט\",,,ישיבות מצומצמות,,,,,,\n12/30/26,רביעי,,,,,,,,\nכ',,,ישיבות מצומצמות,,,,,,\n12/31/26,חמישי,,,,,,,,\n\"כ\"\"א\",,,ישיבות מצומצמות,,,,,,\n", "ינואר": ",,,,,,,,,\n\"לו\"\"ז לחודש ינואר 2027 - תשפ\"\"ז\",,,,,,,,,\nינואר,טבת- שבט,פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ח',שכבה ט',,,\nתאריך,יום,,,,,,שם האירוע,,\n01/01/27,שישי,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n01/02/27,שבת,,,,,,,,\n\"כ\"\"ג\",,,,,,,,,\n01/03/27,ראשון,,,,,,,,\n\"כ\"\"ד\",,,ישיבות מצומצמות,,,,,,\n01/04/27,שני,,,,,,,,\n\"כ\"\"ה\",,,ישיבות מצומצמות,,,,,,\n01/05/27,שלישי,,,,,,,,\n\"כ\"\"ו\",,,ישיבות מצומצמות,,,,,,\n01/06/27,רביעי,,,,,,,,\n\"כ\"\"ז\",,,ישיבות מצומצמות,,,ט'7 גיא קופיט מפגשי העצמה 10:30 -12:05,,,\n01/07/27,חמישי,,,,,,,,\n\"כ\"\"ח\",,,ישיבות מצומצמות,,,,,,\n01/08/27,שישי,,,,,,,,\n\"כ\"\"ט\",,,,,,,,,\n01/09/27,שבת,,,,,,,,\nא',,,,,,,\"ר\"\"ח שבט\",,\n01/10/27,ראשון,,,,,,,,\nב',,,ישיבות מצומצמות,,,,,,\n01/11/27,שני,,,,,,,,\nג',,,ישיבות מצומצמות,,,,,,\n01/12/27,שלישי,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\nד',,,ישיבות מצומצמות,,,מבחן תנופה מדעים,,,\n01/13/27,רביעי,,,,,,,,\nה',,,ישיבות מצומצמות,,,,,,\n01/14/27,חמישי,,,,,,,,\nו',,,ישיבות מצומצמות,,,,,,\n01/15/27,שישי,,,,,,,,\nז',,,,,,,,,\n01/16/27,שבת,,,,,,,,\nח',,,,,,,,,\n01/17/22,ראשון,,,,,,,,\nט',,,הנפקת תעודות,,,,,,\n01/18/27,שני,,,,,,,,\nי',,,,,,,,,\n01/19/27,שלישי,,,,,,,,\n\"י\"\"א\",,,,,,,,,\n01/20/27,רביעי,,,,,,,,\n\"י\"\"ב\",,,,,,מבחן תנופה שפת אם,,,\n01/21/27,חמישי,,,,,,,,\n\"י\"\"ג\",,,,,,,,,\n01/22/27,שישי,,,,,,,,\n\"י\"\"ד\",,,,,,,,,\n01/23/27,שבת,,,,,,,,\n\"ט\"\"ו\",,,,,,,ראש השנה לאילנות,,\n01/24/27,ראשון,,,,,,,,\n\"ט\"\"ז\",,,,,,,,,\n01/25/27,שני,,,,,,,,\n\"י\"\"ז\",,,,,,,,,\n01/26/27,שלישי,,,,,,,,\n\"י\"\"ח\",,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,מבחן תנופה אנגלית,,,\n01/27/27,רביעי,,,,,,,,\n\"י\"\"ט\",,,,,,,,,\n01/28/27,חמישי,,,,,,,,\nכ',,,חלוקת תעודות+ יום הורים,,,,חלוקת תעודות סמסטר א,,\n01/29/27,שישי,,,,,,,,\n\"כ\"\"א\",,,,,,,,,\n01/30/27,שבת,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n01/31/27,ראשון,,,,,,,,\n\"כ\"\"ג\",,,סיכום סמסטר א' שש שנתי ,,,,,,\n", "פברואר": ",,,,,,,,,\n\"לו\"\"ז לחודש פברואר 2027 - תשפ\"\"ז\",,,,,,,,,\nפברואר,שבט - אדר א',פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ח',שכבה ט',,,\nתאריך,יום,,,,,,שם האירוע,,\n02/01/27,שני,,,,,,,,\n\"כ\"\"ד\",,,,,,,,,\n02/02/27,שלישי,,,,,,,,\n\"כ\"\"ה\",,,,,,,יום המילה הטובה,,\n02/03/27,רביעי,,,,,,,,\n\"כ\"\"ו\",,,,,,\"ט'1,2 מבחן תנופה למיומנויות המאה\",,,\n02/04/27,חמ ישי,,,,,,,,\n\"כ\"\"ז\",,,,,,,,,\n02/05/27,שישי,,,,,,,,\n\"כ\"\"ח\",,,,,,,,,\n02/06/27,שבת,,,,,,,,\n\"כ\"\"ט\",,,,,,,,,\n02/07/27,ראשון,,\"ישיבת רכזי מקצוע חט\"\"ב, חט\"\"ע 14:00\",,,,,,\nל',,,,,,,,,\n02/08/27,שני,,,,,,,,\nא',,,,,,,\"ר\"\"ח אדר א'\",,\n02/09/27,שלישי,,,,,,,,\nב',,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\n02/10/27,רביעי,,,,,,,,\nג',,,,,,,,,\n02/11/27,חמישי,,,,,,,,\nד',,,,,,,,,\n02/12/27,שישי,,,,,,,,\nה',,,,,,,,,\n02/13/27,שבת,,,,,,,,\nו',,,,,,,,,\n02/14/27,ראשון,,,,,,,,\nז',,,,,,,,,\n02/15/27,שני,,,,,,,,\nח',,,,,,,,,\n02/16/27,שלישי,,,,,,,,\nט',,,,,,,,,\n02/17/27,רביעי,,,,,,,,\nי',,,,,,,,,\n02/18/27,חמישי,,,,,,,,\n\"י\"\"א\",,,,,,,,,\n02/19/22,שישי,,,,,,,,\n\"י\"\"ב\",,,,,,,,,\n02/20/27,שבת,,,,,,,,\n\"י\"\"ג\",,,,,,,,,\n02/21/27,ראשון,,,,,,,,\n\"י\"\"ד\",,,,,,,,,\n02/22/27,שני,,,,,,,,\n\"ט\"\"ו\",,,ערב פתוח לקראת עלייה לכתה י',,,יום עיון אדם לאדם אשכול פיס,,,\n02/23/27,שלישי,,,,,,,,\n\"ט\"\"ז\",,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\n02/24/27,רביעי,,,,,,,,\n\"י\"\"ז\",,,,,,,,,\n02/25/27,חמישי,,,,,,,,\n\"י\"\"ח\",,,,,,,,,\n02/26/27,שישי,,,,,,,,\n\"י\"\"ט\",,,,,,,,,\n02/27/27,שבת,,,,,,,,\nכ',,,,,,,,,\n02/28/27,ראשון,,,,,,,,\n\"כ\"\"א\",,,,,,,,,\n", "מרץ": ",,,,,,,,,\n\"לו\"\"ז לחודש מרץ 2027 - תשפ\"\"ז\",,,,,,,,,\nמרץ,אדר א' - אדר ב',פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ח',שכבה ט',,,\nתאריך,יום,,,,,,שם האירוע,,\n03/01/27,שני,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n03/02/27,שלישי,,,,,,,,\n\"כ\"\"ג\",,,,,,,,,\n03/03/27,רביעי,,,,,,,,\n\"כ\"\"ד\",,,,,,,,,\n03/04/27,חמישי,,,,,,,,\n\"כ\"\"ה\",,,,,,,,,\n03/05/27,שישי,,,,,,,,\n\"כ\"\"ו\",,,,,,,,,\n03/06/27,שבת,,,,,,,,\n\"כ\"\"ז\",,,,,,,,,\n03/07/27,ראשון,,\"ישיבת רכזי מקצוע חט\"\"ב, חט\"\"ע 14:00\",,,,,,\n\"כ\"\"ח\",,,,,,,שבוע הנערה הישראלית,,\n03/08/27,שני,,,,,,,,\n\"כ\"\"ט\",,,ערב פתוח לקראת עלייה לכתה ז',,,,,,\n03/09/27,שלישי,,,,,,,,\nל',,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,מועצת תלמידים פעילות נשים מישפיעניות בחברה הישראלית,,\n03/10/27,רביעי,,,,,,,,\nא',,,,,\"חגיגות ר\"\"ח אדר\",,\"ר\"\"ח אדר ב'\",,\n03/11/27,חמישי,,,,,,,,\nב',,,,,,,,,\n03/12/27,שישי,,,,,,,,\nג',,,,,,,,,\n03/13/27,שבת,,,,,,,,\nד',,,,,,,,,\n03/14/27,ראשון,,,,,,,,\nה',,,ישיבות פדגוגיות מורחבות,,,,,,\n03/15/27,שני,,,,,,,,\nו',,,ישיבות פדגוגיות מורחבות,,,,,,\n03/16/27,שלישי,,,,,,,,\nז',,,ישיבות פדגוגיות מורחבות,,,יום פיג'מות,,,\n03/17/27,רביעי,,,,,,,,\n,,,,,,,,,\nח',,,ישיבות פדגוגיות מורחבות,,,,,,\n03/18/27,חמישי,,,,,,,,\nט',,,ישיבות פדגוגיות מורחבות,,,,,,\n03/19/27,שישי,,,,,,,,\nי',,,,,,,,,\n03/20/27,שבת,,,,,,,,\n\"י\"\"א\",,,,,,,,,\n03/21/27,ראשון,,,,,,קרנבל פורים,,\n\"י\"\"ב\",,,ישיבות פדגוגיות מורחבות,,,,תחפושות,,\n03/22/27,שני,,,,,,,,\n\"י\"\"ג\",,,ישיבות פדגוגיות מורחבות,,,,תענית אסתר,,\n03/23/27,שלישי,,,,,,,,\n\"י\"\"ד\",,,,,,,פורים,,\n03/24/27,רביעי,,,,,,,,\n\"ט\"\"ו\",,,,,,,שושן פורים,,\n03/25/27,חמישי,,,,,,,,\n\"ט\"\"ז\",,,ישיבות פדגוגיות מורחבות,,,,,,\n03/26/27,שישי,,,,,,,,\n\"י\"\"ז\",,,,,,,שעון קיץ,,\n03/27/27,שבת,,,,,,,,\n\"י\"\"ח\",,,,,,,,,\n03/28/27,ראשון,,,,,,,,\n\"י\"\"ט\",,,ישיבות פדגוגיות מורחבות,,,,,,\n03/29/27,שני,,,,,,,,\nכ',,,ישיבות פדגוגיות מורחבות,,,,,,\n03/30/27,שלישי,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\n\"כ\"\"א\",,,ישיבות פדגוגיות מורחבות,,,,,,\n03/31/27,רביעי,,,,,,,,\n\"כ\"\"ב\",,,ישיבות פדגוגיות מורחבות,,,,,,\n", "אפריל": ",,,,,,,,,\n\"לו\"\"ז לחודש אפריל 2027 - תשפ\"\"ז\",,,,,,,,,\nאפריל,אדר ב'- ניסן,פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ח',שכבה ט',,,\nתאריך,יום,,,,,,שם האירוע,,\n04/01/27,חמישי,,,,,,,,\n\"כ\"\"ג\",,,ישיבות פדגוגיות מורחבות,,,,,,\n04/02/27,שישי,,,,,,,,\n\"כ\"\"ד\",,,,,,,,,\n04/03/27,שבת,,,,,,,,\n\"כ\"\"ה\",,,,,,,,,\n04/04/27,ראשון,,,,,,,,\n\"כ\"\"ו\",,,ישיבות פדגוגיות מורחבות,,,,,,\n04/05/27,שני,,,,,,,,\n\"כ\"\"ז\",,,ישיבות פדגוגיות מורחבות,,,,,,\n04/06/27,שלישי,,,,,,,,\n\"כ\"\"ח\",,,ישיבות פדגוגיות מורחבות,,,,,,\n04/07/27,רביעי,,,,,,,,\n\"כ\"\"ט\",,,ישיבות פדגוגיות מורחבות,,,,,,\n04/08/27,חמישי,,,,,,,,\nא',,,יום הורים מורים מקצועיים,,,,\"ר\"\"ח ניסן\",,\n04/09/27,שישי,,,,,,,,\nב',,,,,,,,,\n04/10/27,שבת,,,,,,,,\nג',,,,,,,,,\n04/11/27,ראשון,,,,,,,,\nד',,,,,טיול שנתי כרמל מערבי,,יום המעשים הטובים,,\n04/12/27,שני,,,,,,,,\nה',,,,,טיול שנתי כרמל מערבי,,,,\n04/13/27,שלישי,,,,,,,,\nו',,,,,,,טרום פסח,,\n04/14/27,רביעי,,,,,,,,\nז',,,,,,,טרום פסח,,\n04/15/27,חמישי,,,,,,,,\nח',,,,,,,טרום פסח,,\n04/16/27,שישי,,,,,,,,\nט',,,,,,,טרום פסח,,\n04/17/27,שבת,,,,,,,,\nי',,,,,,,,,\n04/18/27,ראשון,,,,,,,,\n\"י\"\"א\",,,,,,,טרום פסח,,\n04/19/27,שני,,,,,,,,\n\"י\"\"ב\",,,,,,,טרום פסח,,\n04/20/27,שלישי,,,,,,,,\n\"י\"\"ג\",,,,,,,טרום פסח,,\n04/21/27,רביעי,,,,,,,,\n\"י\"\"ד\",,,,,,,ערב פסח,,\n04/22/27,חמישי,,,,,,,,\n\"ט\"\"ו\",,,,,,,פסח,,\n04/23/27,שישי,,,,,,,,\n\"ט\"\"ז\",,,,,,,\"א חוה\"\"מ\",,\n04/24/27,שבת,,,,,,,,\n\"י\"\"ז\",,,,,,,\"ב  חוה\"\"מ\",,\n04/25/27,ראשון,,,,,,,,\n\"י\"\"ח\",,,,,,,\"ג חוה\"\"מ\",,\n04/26/27,שני,,,,,,,,\n\"י\"\"ט\",,,,,,,\"ד חוה\"\"מ\",,\n04/27/27,שלישי,,,,,,,,\nכ',,,,,,,\"ה חוה\"\"מ\",,\n04/28/27,רביעי,,,,,,,,\n\"כ\"\"א\",,,,,,,שביעי של פסח,,\n04/29/27,חמישי,,,,,,,,\n\"כ\"\"ב\",,,,,,,אסרו חג,,\n04/30/27,שישי,,,,,,,,\n\"כ\"\"ג\",,,,,,,,,\n", "מאי": ",,,,,,,,,\n\"לו\"\"ז לחודש מאי 2027 - תשפ\"\"ז\",,,,,,,,,\nמאי,ניסן- אייר,פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ח',שכבה ט',,,\nתאריך,יום,,,,,,שם האירוע,,\n05/01/27,שבת,,,,,,,,\n\"כ\"\"ד\",,,,,,,,,\n05/02/27,ראשון,,\"ישיבת רכזי מקצוע חט\"\"ב, חט\"\"ע 14:00\",,,,,,\n\"כ\"\"ה\",,,,,,,,,\n05/03/27,שני,,,,,,,,\n\"כ\"\"ו\",,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,ערב יום השואה,,\n05/04/27,שלישי,,,,,,,,\n\"כ\"\"ז\",,,,,,,יום הזכרון לשואה ולגבורה,,\n05/05/27,רביעי,,,,,,,,\n\"כ\"\"ח\",,,,,,,,,\n05/06/27,חמישי,,,,,,,,\n\"כ\"\"ט\",,,,,,,,,\n05/07/27,שישי,,,,,,,,\nל',,,,,,,,,\n05/08/27,שבת,,,,,,,,\nא',,,,,,,\"ר\"\"ח אייר\",,\n05/09/27,ראשון,,,,,,,,\nב',,,,,,,,,\n05/10/27,שני,,,,,,,,\nג',,,,,,,ערב יום הזכרון,,\n05/11/27,שלישי,,,,,,,,\nד',,,,,,,יום הזכרון,,\n05/12/27,רביעי,,,,,,,,\nה',,,,,,,יום העצמאות,,\n05/13/27,חמישי,,,,,,,,\nו',,,,,,,,,\n05/14/27,שישי,,,,,,,,\nז',,,,,,,,,\n05/15/27,שבת,,,,,,,,\nח',,,,,,,,,\n05/16/27,ראשון,,,,,,,,\nט',,,,,,,,,\n05/17/27,שני,,,,,,,,\nי',,,,,,,,,\n05/18/27,שלישי,,,,,,,,\n\"י\"\"א\",,,,,,,,,\n05/19/27,רביעי,,,,,,,,\n\"י\"\"ב\",,,,,,טיול שנתי כרמל מערבי,,,\n05/20/27,חמישי,,,,,,,,\n\"י\"\"ג\",,,,,,טיול שנתי כרמל מערבי,,,\n05/21/27,שישי,,,,,,,,\n\"י\"\"ד\",,,,,,,,,\n05/22/27,שבת,,,,,,,,\n\"ט\"\"ו\",,,,,,,,,\n05/23/27,ראשון,,,,,,,,\n\"ט\"\"ז\",,,,,יום שיא עישון ואלכוהול- הצגה ספורי אלכוהול,,,,\n05/24/27,שני,,,,,,,,\n\"י\"\"ז\",,,,,,,\"ערב ל\"\"ג בעומר\",,\n05/25/27,שלישי,,,,,,,,\n\"י\"\"ח\",,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,\"ל\"\"ג בעומר\",,\n05/26/27,רביעי,,,,,,,,\n\"י\"\"ט\",,,ישיבות מצומצמות,,,,,,\n05/27/27,חמישי,,,,,,,,\nכ',,,ישיבות מצומצמות,,,,,,\n05/28/27,שישי,,,,,,,,\n\"כ\"\"א\",,,,,,,,,\n05/29/27,שבת,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n05/30/27,ראשון,,,,,,,,\n\"כ\"\"ג\",,,ישיבות מצומצמות,,,,,,\n05/31/27,שני,,,,,,,,\n\"כ\"\"ד\",,,ישיבות מצומצמות,,,,,,\n", "יוני": ",,,,,,,,,\n\"לו\"\"ז לחודש יוני 2027 - תשפ\"\"ז\",,,,,,,,,\nיוני,אייר- סיוון,פדגוגיה,,תלמידים,,,,,\n,,הנהלה,מורים,חטיבת אלה,שכבה ח',שכבה ט',,,\nתאריך,יום,,,,,,שם האירוע,,\n06/01/27,שלישי,,,,,,,,\n\"כ\"\"ה\",,,ישיבות מצומצמות,,,,,,\n06/02/27,רביעי,,,,,,,,\n\"כ\"\"ו\",,,ישיבות מצומצמות,,,צעדת ירושלים,,,\n06/03/27,חמישי,,,,,,,,\n\"כ\"\"ז\",,,ישיבות מצומצמות,,,,,,\n06/04/27,שישי,,,,,,,,\n\"כ\"\"ח\",,,,,,,יום ירושלים,,\n06/05/27,שבת,,,,,,,,\n\"כ\"\"ט\",,,,,,,,,\n06/06/27,ראשון,,\"ישיבת רכזי מקצוע חט\"\"ב, חט\"\"ע 14:00\",,,,,,\nא',,,ישיבות מצומצמות,שכבה ז' נחל הקיבוצים,,,\"ר\"\"ח סיוון\",,\n06/07/27,שני,,,,,,,,\nב',,,ישיבות מצומצמות,,,,,,\n06/08/27,שלישי,,\"הדרכת צוות מדעים חט\"\"ב 11:20 -13:00\",,,,,,\nג',,,ישיבות מצומצמות,,,,,,\n06/09/27,רביעי,,,,,,הפנינג שבועות,,\nד',,,ישיבות מצומצמות,,,מסיבת סיום,,,\n06/10/27,חמישי,,,,,,,,\nה',,,,,,,ערב שבועות,,\n06/11/27,שישי,,,,,,,,\nו',,,,,,,שבועות,,\n06/12/27,שבת,,,,,,,,\nז',,,,,,,אסרו חג,,\n06/13/27,ראשון,,,,,,,,\nח',,,הנפקת תעודות,,,,הנפקת תעודות,,\n06/14/27,שני,,,,,,,,\nט',,,,,,טיול סוף שנה גני חוגה,,,\n06/15/27,שלישי,,,,,,,,\nי',,,,,טיול סוף שנה נחל הקיבוצים,,,,\n06/16/27,רביעי,,,,,,,,\n\"י\"\"א\",,,,,,,,,\n06/17/27,חמישי,,,,,,,,\n\"י\"\"ב\",,,,,,,,,\n06/18/27,שישי,,,,,,,,\n\"י\"\"ג\",,,,,,,,,\n06/19/27,שבת,,,,,,,,\n\"י\"\"ד\",,,,,,,,,\n06/20/27,ראשון,,,,,,,,\n\"ט\"\"ו\",,,,,,,חלוקת תעודות,,\n06/21/27,שני,,,,,,,,\n\"ט\"\"ז\",,,,,,,,,\n06/22/27,שלישי,,,,,,,,\n\"י\"\"ז\",,,,,,,,,\n06/23/27,רביעי,,,,,,,,\n\"י\"\"ח\",,,,,,,,,\n06/24/27,חמישי,,,,,,,,\n\"י\"\"ט\",,,,,,,,,\n06/25/27,שישי,,,,,,,,\nכ',,,,,,,,,\n06/26/27,שבת,,,,,,,,\n\"כ\"\"א\",,,,,,,,,\n06/27/27,ראשון,,,,,,,,\n\"כ\"\"ב\",,,,,,,,,\n06/28/27,שני,,,,,,,,\n\"כ\"\"ג\",,,,,,,,,\n06/29/27,שלישי,,,,,,,,\n\"כ\"\"ד\",,,,,,,,,\n06/30/27,רביעי,,,,,,,,\n\"כ\"\"ה\",,,,,,,מקצועות הגבר,,\n"};
+/* ======================== */
 
-const SAMPLE = [
- {ID:1,Title:"מבחן מחצית א' במתמטיקה",Category:"מבחנים",StartDate:"2026-11-01",EndDate:"2026-11-01",Grade:"שכבה ט'",Location:"כיתות אם",Status:"מתוכנן",Notes:"חומר: פרקים 1-3"},
- {ID:2,Title:"טקס יום הזיכרון",Category:"טקסים",StartDate:"2026-11-10",EndDate:"2026-11-10",Grade:"כל בית הספר",Location:"אולם ספורט",Status:"מתוכנן",Notes:"שעה שלישית, תלבושת אחידה"},
- {ID:3,Title:"חופשת חנוכה",Category:"חגים וחופשות",StartDate:"2026-12-05",EndDate:"2026-12-12",Grade:"כל בית הספר",Location:"-",Status:"מתוכנן",Notes:"אין לימודים"},
- {ID:4,Title:"טיול שנתי מדבר יהודה",Category:"טיולים",StartDate:"2026-11-22",EndDate:"2026-11-24",Grade:"שכבה יא'",Location:"דרום",Status:"מתוכנן",Notes:"יציאה ב-06:00 מגרש חנייה"},
- {ID:5,Title:'בוחן אנגלית - 5 יח"ל',Category:"מבחנים",StartDate:"2026-11-04",EndDate:"2026-11-04",Grade:"שכבה יב'",Location:"מעבדת שפות",Status:"מתוכנן",Notes:"השמעה בשעה שנייה"},
- {ID:6,Title:"יום הורים מחצית א'",Category:"אירועים בית ספריים",StartDate:"2026-12-18",EndDate:"2026-12-18",Grade:"כל בית הספר",Location:"כיתות אם",Status:"מתוכנן",Notes:"שעות 16:00-20:00"},
- {ID:7,Title:"סדנת זהירות בדרכים",Category:"פעילויות העשרה",StartDate:"2026-11-15",EndDate:"2026-11-15",Grade:"שכבה ז'",Location:"אודיטוריום",Status:"מתוכנן",Notes:"בשיתוף עיריית עפולה"}
-];
-const PALETTE = {"מבחנים":"#c2410c","טקסים":"#6d28d9","חגים וחופשות":"#0f766e","טיולים":"#15803d","אירועים בית ספריים":"#1d4ed8","פעילויות העשרה":"#be185d"};
-const EXTRA = ["#a16207","#475569","#0e7490","#9f1239"];
-const MONTHS = ["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
-const DAYS = ["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"];
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-let all = [], view = 'month', cursor = new Date(), usingSample = false;
-cursor = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+const MONTHS=["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+const DAYS=["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+const GCOL={"פדגוגיה":"#1d4ed8","תלמידים":"#15803d","חגים ואירועי לוח שנה":"#b45309"};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s??'').replace(/\s+/g,' ').trim();
+const dn=d=>Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);
+const fromN=n=>{const d=new Date(n*864e5);return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),12)};
+const col=g=>GCOL[g]||'#6b7280';
+let all=[],hebrew={},view='month',cur=null,eid=0;
 
 function parseCSV(t){
   const rows=[];let r=[],f='',q=false;
   for(let i=0;i<t.length;i++){const c=t[i];
-    if(q){ if(c=='"'){ if(t[i+1]=='"'){f+='"';i++}else q=false } else f+=c }
-    else if(c=='"') q=true;
-    else if(c==','){r.push(f);f=''}
+    if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c=='"')q=true;else if(c==','){r.push(f);f=''}
     else if(c=='\n'){r.push(f);rows.push(r);r=[];f=''}
-    else if(c!='\r') f+=c;
-  }
+    else if(c!='\r')f+=c;}
   if(f||r.length){r.push(f);rows.push(r)}
-  const h=rows.shift().map(x=>x.trim());
-  return rows.filter(x=>x.some(v=>v.trim())).map(x=>Object.fromEntries(h.map((k,i)=>[k,(x[i]||'').trim()])));
+  return rows;
 }
-function pd(s){
-  if(!s) return null; s=String(s).trim();
-  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if(m) return new Date(+m[1],m[2]-1,+m[3],12);
-  m=s.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/); if(m){const y=+m[3]<100?2000+ +m[3]:+m[3];return new Date(y,m[2]-1,+m[1],12)}
-  return null;
+function groupOf(label,carry){
+  if(/^(הנהלה|מורים)/.test(label))return'פדגוגיה';
+  if(/^(שכבה|חטיבת)/.test(label))return'תלמידים';
+  return carry||'אחר';
 }
-function normalize(rows){
-  return rows.map(r=>{const s=pd(r.StartDate),e=pd(r.EndDate)||s;return {...r,s,e:e&&s&&e<s?s:e}})
-    .filter(r=>r.s&&r.Title).sort((a,b)=>a.s-b.s||a.e-b.e);
+function parseTab(text,name){
+  const rows=parseCSV(text),hi=rows.findIndex(r=>norm(r[0])=='תאריך');
+  if(hi<1)return[];
+  const title=rows.slice(0,hi).flat().find(c=>c.includes('לחודש'))||name;
+  const month=MONTHS.findIndex(m=>title.includes(m))+1||MONTHS.indexOf(name)+1;
+  const year=+(title.match(/20\d\d/)||[new Date().getFullYear()])[0];
+  const aud=rows[hi-1]||[],hdr=rows[hi],grp=rows[hi-2]||[],cols=[];
+  let carry='';
+  for(let c=2;c<hdr.length;c++){
+    carry=norm(grp[c])||carry;const label=norm(aud[c]);
+    if(norm(hdr[c])=='שם האירוע')cols.push({c,aud:'לוח שנה וחגים',group:'חגים ואירועי לוח שנה'});
+    else if(label)cols.push({c,aud:label,group:groupOf(label,carry)});
+  }
+  const out=[];let day=null;
+  for(const row of rows.slice(hi+1)){
+    const a=norm(row[0]),m=a.match(/^(\d{1,4})[\/.\-](\d{1,2})[\/.\-](\d{1,4})/);
+    if(m){
+      let y=year,mo=month,d;const p=[+m[1],+m[2],+m[3]];
+      if(m[1].length==4){y=p[0];mo=p[1];d=p[2]}else d=p[0]==month&&p[1]!=month?p[1]:p[1]==month?p[0]:p[1];
+      day={date:new Date(y,mo-1,d,12)};
+    }else if(a&&day){hebrew[dn(day.date)]=a}
+    if(!day)continue;
+    for(const k of cols){const v=norm(row[k.c]);if(v)out.push({title:v,aud:k.aud,group:k.group,sn:dn(day.date)})}
+  }
+  return out;
 }
-const colorOf = (()=>{const m={...PALETTE};let i=0;return c=>m[c]||(m[c]=EXTRA[i++%EXTRA.length])})();
-const fmt = d => d.getDate()+' ב'+MONTHS[d.getMonth()];
-const range = e => e.e-e.s>0 ? fmt(e.s)+' – '+fmt(e.e) : fmt(e.s)+' '+e.s.getFullYear();
-const sameDay=(a,b)=>a.getFullYear()==b.getFullYear()&&a.getMonth()==b.getMonth()&&a.getDate()==b.getDate();
+function merge(list){
+  list.sort((a,b)=>(a.aud+a.title).localeCompare(b.aud+b.title)||a.sn-b.sn);
+  const res=[];
+  for(const e of list){
+    const p=res[res.length-1];let ok=false;
+    if(p&&p.aud==e.aud&&p.title==e.title){
+      const gap=e.sn-p.en;ok=gap<=1;
+      if(!ok&&gap<=3){ok=true;for(let n=p.en+1;n<e.sn;n++){const w=fromN(n).getDay();if(w!=5&&w!=6)ok=false}}
+    }
+    if(ok)p.en=e.sn;else res.push({...e,en:e.sn,id:++eid});
+  }
+  return res.map(e=>({...e,s:fromN(e.sn),e:fromN(e.en),time:(e.title.match(/\d{1,2}:\d{2}(\s*[-–]\s*\d{1,2}:\d{2})?/)||[''])[0]}))
+    .filter(e=>!CONFIG.HIDE_GROUPS.includes(e.group)).sort((a,b)=>a.sn-b.sn||a.en-b.en);
+}
+const fmt=d=>d.getDate()+' ב'+MONTHS[d.getMonth()];
+const range=e=>e.sn!=e.en?fmt(e.s)+' – '+fmt(e.e):fmt(e.s)+' '+e.s.getFullYear();
+const mkey=d=>d.getFullYear()*12+d.getMonth();
 
 function filtered(){
-  const c=$('#fCat').value,g=$('#fGrade').value,q=$('#q').value.trim();
-  return all.filter(e=>(!c||e.Category==c)&&(!g||e.Grade==g)&&(!q||(e.Title+' '+e.Notes+' '+e.Location).includes(q)));
+  const g=$('#fGroup').value,a=$('#fAud').value,q=$('#q').value.trim();
+  return all.filter(e=>(!g||e.group==g)&&(!a||e.aud==a)&&(!q||(e.title+' '+e.aud).includes(q)));
 }
 function fillFilters(){
-  for(const [id,key] of [['#fCat','Category'],['#fGrade','Grade']]){
-    const sel=$(id),cur=sel.value,first=sel.options[0];
-    sel.innerHTML='';sel.append(first);
-    [...new Set(all.map(e=>e[key]).filter(Boolean))].forEach(v=>sel.append(new Option(v,v)));
-    sel.value=cur;
-  }
-  $('#legend').innerHTML=[...new Set(all.map(e=>e.Category))].map(c=>`<span><i class="dot" style="background:${colorOf(c)}"></i>${esc(c)}</span>`).join('');
+  const set=(id,vals)=>{const s=$(id),v=s.value,f=s.options[0];s.innerHTML='';s.append(f);vals.forEach(x=>s.append(new Option(x,x)));s.value=v};
+  set('#fGroup',[...new Set(all.map(e=>e.group))]);
+  set('#fAud',[...new Set(all.map(e=>e.aud))]);
+  $('#legend').innerHTML=[...new Set(all.map(e=>e.group))].map(g=>`<span><i class="dot" style="background:${col(g)}"></i>${esc(g)}</span>`).join('');
 }
-function chip(e){
-  return `<button class="chip ev ${e.Status=='בוטל'?'cancel':''}" style="background:${colorOf(e.Category)}" data-id="${esc(e.ID)}" title="${esc(e.Title)}">${esc(e.Title)}</button>`;
-}
+const chip=e=>`<button class="chip" style="background:${col(e.group)}" data-id="${e.id}" title="${esc(e.title)}">${esc(e.title)}</button>`;
+const nav=t=>`<div class="mnav"><button id="next" aria-label="חודש הבא">›</button><h2>${t}</h2><button id="prev" aria-label="חודש קודם">‹</button></div>`;
+
 function renderMonth(list){
-  const y=cursor.getFullYear(),m=cursor.getMonth(),first=new Date(y,m,1),start=new Date(y,m,1-first.getDay(),12),today=new Date();
-  let h=`<div class="mnav"><button id="next" aria-label="חודש הבא">›</button><h2>${MONTHS[m]} ${y}</h2><button id="prev" aria-label="חודש קודם">‹</button></div><div class="grid">`;
-  h+=DAYS.map(d=>`<div class="dh">${d}</div>`).join('');
+  const y=cur.getFullYear(),m=cur.getMonth(),start=new Date(y,m,1-new Date(y,m,1).getDay(),12),t=dn(new Date());
+  let h=nav(MONTHS[m]+' '+y)+'<div class="grid">'+DAYS.map(d=>`<div class="dh">${d.slice(0,3)}׳</div>`).join('');
   for(let i=0;i<42;i++){
-    const d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i,12);
+    const d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i,12),n=dn(d);
     if(i>=35&&d.getMonth()!=m)break;
-    const ev=list.filter(e=>d>=new Date(e.s.getFullYear(),e.s.getMonth(),e.s.getDate())&&d<=new Date(e.e.getFullYear(),e.e.getMonth(),e.e.getDate(),23));
-    h+=`<div class="day ${d.getMonth()!=m?'off':''} ${sameDay(d,today)?'today':''}"><span class="n">${d.getDate()}</span>${ev.map(chip).join('')}</div>`;
+    const ev=list.filter(e=>e.sn<=n&&e.en>=n);
+    h+=`<div class="day ${d.getMonth()!=m?'out':''} ${d.getDay()>=5?'wk':''} ${n==t?'today':''}"><span class="n"><b>${d.getDate()}</b><small>${esc(hebrew[n]||'')}</small></span>${ev.slice(0,3).map(chip).join('')}${ev.length>3?`<button class="more" data-day="${n}">+${ev.length-3} נוספים</button>`:''}</div>`;
   }
   return h+'</div>';
 }
 function renderGantt(list){
-  if(!list.length) return '<div class="empty">אין אירועים להצגה</div>';
-  const min=new Date(Math.min(...list.map(e=>e.s))),max=new Date(Math.max(...list.map(e=>e.e)));
-  const rs=new Date(min.getFullYear(),min.getMonth(),1,12),re=new Date(max.getFullYear(),max.getMonth()+1,0,12);
-  const tot=Math.round((re-rs)/864e5)+1,pct=d=>(Math.round((d-rs)/864e5)/tot*100);
-  let months='',d=new Date(rs);
-  while(d<=re){const dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();months+=`<div style="width:${dim/tot*100}%">${MONTHS[d.getMonth()]} ${d.getFullYear()}</div>`;d=new Date(d.getFullYear(),d.getMonth()+1,1,12)}
-  const t=new Date();
-  const tl=t>=rs&&t<=re?`<div class="tl" style="inset-inline-start:${pct(t)}%"></div>`:'';
-  let h=`<div class="gscroll"><div class="gw"><div class="grow head"><div class="glabel">אירוע</div><div class="months">${months}</div></div>`;
-  for(const e of list){
-    const w=Math.max((Math.round((e.e-e.s)/864e5)+1)/tot*100,.6);
-    h+=`<div class="grow"><div class="glabel ${e.Status=='בוטל'?'cancel':''}">${esc(e.Title)}<small>${esc(e.Category)}</small></div>
-    <div class="track"><button class="bar1 ev ${e.Status=='בוטל'?'cancel':''}" aria-label="${esc(e.Title)}" data-id="${esc(e.ID)}" style="border:0;background:${colorOf(e.Category)};inset-inline-start:${pct(e.s)}%;width:${w}%"></button></div></div>`;
+  const y=cur.getFullYear(),m=cur.getMonth(),dim=new Date(y,m+1,0).getDate(),a=dn(new Date(y,m,1)),b=a+dim-1;
+  const ev=list.filter(e=>e.sn<=b&&e.en>=a),t=dn(new Date());
+  let h=nav(MONTHS[m]+' '+y);
+  if(!ev.length)return h+'<div class="empty">אין אירועים בחודש זה</div>';
+  h+=`<div class="gs"><div class="gw"><div class="gr head"><div class="gl">אירוע</div><div class="days">${Array.from({length:dim},(_,i)=>`<span class="${new Date(y,m,i+1).getDay()>=5?'wk':''}">${i+1}</span>`).join('')}</div></div>`;
+  for(const e of ev){
+    const s=Math.max(e.sn,a),f=Math.min(e.en,b);
+    h+=`<div class="gr"><div class="gl" title="${esc(e.title)}">${esc(e.title)}<small>${esc(e.aud)}</small></div><div class="tk"><button class="bar1" data-id="${e.id}" aria-label="${esc(e.title)}" style="background:${col(e.group)};inset-inline-start:${(s-a)/dim*100}%;width:${(f-s+1)/dim*100}%"></button>${t>=a&&t<=b?`<div class="tl" style="inset-inline-start:${(t-a+.5)/dim*100}%"></div>`:''}</div></div>`;
   }
-  return h+`<div style="position:absolute;top:0;bottom:0;inset-inline-start:230px;inset-inline-end:0;pointer-events:none"><div style="position:relative;height:100%">${tl}</div></div></div></div>`;
+  return h+'</div></div>';
 }
 function renderList(list){
-  if(!list.length) return '<div class="empty">אין אירועים להצגה</div>';
-  return list.map(e=>`<button class="item ev ${e.Status=='בוטל'?'cancel':''}" data-id="${esc(e.ID)}"><i style="background:${colorOf(e.Category)}"></i><div><b>${esc(e.Title)}</b><span>${esc(e.Category)} · ${esc(e.Grade)}</span></div><div class="when">${range(e)}</div></button>`).join('');
+  const q=$('#q').value.trim(),y=cur.getFullYear(),m=cur.getMonth(),a=dn(new Date(y,m,1)),b=dn(new Date(y,m+1,0));
+  const ev=q?list:list.filter(e=>e.sn<=b&&e.en>=a);
+  const head=q?`<div class="mnav"><h2>תוצאות חיפוש בכל השנה (${ev.length})</h2></div>`:nav(MONTHS[m]+' '+y);
+  if(!ev.length)return head+'<div class="empty">אין אירועים להצגה</div>';
+  return head+ev.map(e=>`<button class="item" data-id="${e.id}"><i style="background:${col(e.group)}"></i><div><b>${esc(e.title)}</b><span>${esc(e.aud)}</span></div><div class="when">${DAYS[e.s.getDay()].slice(0,3)}׳ ${range(e)}</div></button>`).join('');
 }
 function render(){
-  const list=filtered();
+  const list=filtered(),q=$('#q').value.trim();
   $('#view').innerHTML=view=='month'?renderMonth(list):view=='gantt'?renderGantt(list):renderList(list);
   const p=$('#prev'),n=$('#next');
-  if(p){p.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()-1,1);render()};n.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);render()}}
+  if(p){p.onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()-1,1);render()};n.onclick=()=>{cur=new Date(cur.getFullYear(),cur.getMonth()+1,1);render()}}
+  const nt=$('#note');
+  if(q&&view!='list'){nt.hidden=false;nt.innerHTML=`נמצאו ${list.length} אירועים בשנה כולה. <button id="toList">הצגה ברשימה</button>`;$('#toList').onclick=()=>setView('list')}
+  else nt.hidden=true;
 }
-$('#view').addEventListener('click',ev=>{
-  const b=ev.target.closest('[data-id]');if(!b)return;
-  const e=all.find(x=>String(x.ID)==b.dataset.id);if(!e)return;
-  const row=(k,v)=>v&&v!='-'?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
-  $('#dlg').innerHTML=`<div class="dh2" style="background:${colorOf(e.Category)}"><h3>${esc(e.Title)}</h3></div><dl>${row('תאריך',range(e))}${row('קטגוריה',e.Category)}${row('שכבה',e.Grade)}${row('מיקום',e.Location)}${row('סטטוס',e.Status)}${row('הערות',e.Notes)}</dl><button class="x" onclick="this.closest('dialog').close()">סגירה</button>`;
+function setView(v){view=v;document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v==v));render()}
+function openEv(id){
+  const e=all.find(x=>x.id==id);if(!e)return;
+  const row=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
+  $('#dlg').innerHTML=`<div class="dh2" style="background:${col(e.group)}"><h3>${esc(e.title)}</h3></div><dl>${row('תאריך',DAYS[e.s.getDay()]+', '+range(e))}${row('תאריך עברי',hebrew[e.sn])}${row('סוג',e.group)}${row('קהל יעד',e.aud)}${row('שעה',e.time)}</dl><button class="x" onclick="this.closest('dialog').close()">סגירה</button>`;
+  if(!$('#dlg').open)$('#dlg').showModal();
+}
+function openDay(n){
+  const d=fromN(n),ev=filtered().filter(e=>e.sn<=n&&e.en>=n);
+  $('#dlg').innerHTML=`<div class="dh2" style="background:var(--ink)"><h3>${DAYS[d.getDay()]}, ${fmt(d)}</h3></div>${ev.map(e=>`<button class="item" data-id="${e.id}"><i style="background:${col(e.group)}"></i><div><b>${esc(e.title)}</b><span>${esc(e.aud)}</span></div><span></span></button>`).join('')}<button class="x" style="margin-top:12px" onclick="this.closest('dialog').close()">סגירה</button>`;
   $('#dlg').showModal();
+}
+document.addEventListener('click',ev=>{
+  const b=ev.target.closest('[data-id],[data-day]');if(!b||!b.closest('#view,#dlg'))return;
+  if(b.dataset.day)openDay(+b.dataset.day);else openEv(b.dataset.id);
 });
-document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
-  view=b.dataset.v;document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x==b));render();
-});
-['#fCat','#fGrade'].forEach(s=>$(s).onchange=render);$('#q').oninput=render;
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+['#fGroup','#fAud'].forEach(s=>$(s).onchange=render);$('#q').oninput=render;
 
+async function fetchTabs(){
+  if(CONFIG.CSV_URLS.length)return Promise.all(CONFIG.CSV_URLS.map(async(u,i)=>{const r=await fetch(u);if(!r.ok)throw 0;return[await r.text(),CONFIG.TABS[i]||'']}));
+  if(CONFIG.SHEET_ID)return Promise.all(CONFIG.TABS.map(async n=>{
+    const r=await fetch(`https://docs.google.com/spreadsheets/d/${CONFIG.SHEET_ID}/gviz/tq?tqx=out:csv&headers=0&sheet=${encodeURIComponent(n)}`);
+    if(!r.ok)throw 0;return[await r.text(),n]}));
+  throw 0;
+}
 async function load(){
   $('#title').textContent=CONFIG.TITLE;document.title=CONFIG.TITLE;
-  try{
-    if(!CONFIG.CSV_URL) throw new Error('no url');
-    const res=await fetch(CONFIG.CSV_URL+(CONFIG.CSV_URL.includes('?')?'&':'?')+'t='+Date.now());
-    if(!res.ok) throw new Error(res.status);
-    all=normalize(parseCSV(await res.text()));usingSample=false;
-    $('#warn').hidden=true;
-    $('#sub').textContent='עודכן '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
-  }catch(err){
-    if(!all.length){all=normalize(SAMPLE);usingSample=true}
-    const w=$('#warn');w.hidden=false;
-    w.textContent=CONFIG.CSV_URL?'לא הצלחנו לטעון את הגיליון, מוצגים נתונים אחרונים.':'מוצגים נתוני דוגמה. כדי לחבר את הגיליון יש להדביק קישור CSV ב-CONFIG.';
-    $('#sub').textContent='';
+  let tabs,live=true;
+  try{tabs=await fetchTabs()}catch(e){tabs=Object.entries(EMBEDDED).map(([n,t])=>[t,n]);live=false}
+  hebrew={};eid=0;
+  all=merge(tabs.flatMap(([t,n])=>parseTab(t,n)));
+  const nt=$('#sub');
+  nt.textContent=live?'מתעדכן אוטומטית מהגיליון · '+new Date().toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}):(CONFIG.SHEET_ID||CONFIG.CSV_URLS.length?'לא הצלחנו לטעון את הגיליון, מוצגים נתונים שמורים':'מוצגים נתונים שמורים. יש להגדיר SHEET_ID כדי לחבר את הגיליון');
+  if(!cur&&all.length){
+    const now=new Date(),lo=all[0].s,hi=all[all.length-1].e;
+    cur=mkey(now)>=mkey(lo)&&mkey(now)<=mkey(hi)?new Date(now.getFullYear(),now.getMonth(),1):new Date(lo.getFullYear(),lo.getMonth(),1);
   }
-  if(all.length&&view=='month'&&!usingSample===false){/* keep cursor on sample month */}
-  if(usingSample&&all.length)cursor=new Date(all[0].s.getFullYear(),all[0].s.getMonth(),1);
+  cur=cur||new Date();
   fillFilters();render();
 }
 load();
-if(CONFIG.CSV_URL)setInterval(load,CONFIG.REFRESH_MINUTES*60000);
+if(CONFIG.SHEET_ID||CONFIG.CSV_URLS.length)setInterval(load,CONFIG.REFRESH_MINUTES*60000);
 </script>
 </body>
 </html>
